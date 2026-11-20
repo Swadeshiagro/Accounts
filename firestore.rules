@@ -1,0 +1,13 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // শুধু সিফাত ও সাগরের অ্যাকাউন্ট ডাটা দেখতে ও লিখতে পারবে
+    match /farms/{farm}/{document=**} {
+      allow read, write: if request.auth != null
+        && request.auth.token.email in [
+          "sifat@swadeshi-agro.app",
+          "sagar@swadeshi-agro.app"
+        ];
+    }
+  }
+}
