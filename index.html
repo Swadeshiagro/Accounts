@@ -622,12 +622,21 @@ function tmk(i,st){var a=AL[i];if(!a)return;db.cfg=(db.cfg||[]).filter(function(
 function tundo(i){var a=AL[i];if(!a)return;db.cfg=(db.cfg||[]).filter(function(c){return !(c.type==="tdone"&&c.date===today()&&c.txt===a.t)});save();draw()}
 
 var LOGO="logo-256.png";
+/* ---------- লগইন ---------- */
+var USERS={"sifat":"3bdfc851adb2745c79553113d721770eed82d1247c4d2e2804628c69b51185a8","sagor":"063d741a78f88f0af388fb4846f29c5401eb261485f4d9ff3f4d25c569c7333e"},NAMES={"sifat":"Sifat","sagor":"Sagor"},ME="",AUTH=false;
+(function(){try{var a=(localStorage.getItem("sa_auth")||"").split(":");if(USERS[a[0]]&&USERS[a[0]]===a[1]){AUTH=true;ME=a[0]}}catch(e){}})();
+function sha(t){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return("0"+x.toString(16)).slice(-2)}).join("")})}
+function loginHtml(){return "<div style='text-align:center;color:#fff;padding:56px 10px'><img src='logo-256.png' alt='' style='width:120px;height:120px;border-radius:50%'><h1 style='margin:14px 0 4px;font-size:26px'>স্বদেশী এগ্রো</h1><div style='color:var(--sub);margin-bottom:22px'>100% Organic &amp; Pure</div><div style='background:var(--card);color:var(--ink);border-radius:12px;padding:14px;max-width:320px;margin:0 auto;text-align:left'>"+F("ইউজারনেম","lgu","text","","autocomplete=username autocapitalize=off autocorrect=off")+F("পাসওয়ার্ড","lgp","password","","autocomplete=current-password")+"<button onclick='dologin()'>ঢুকুন</button></div></div>"}
+function dologin(){var u=v("lgu").trim().toLowerCase(),p=v("lgp");if(!u||!p)return toast("ইউজারনেম ও পাসওয়ার্ড দিন");if(!window.crypto||!crypto.subtle)return toast("এই ব্রাউজারে লগইন চলবে না, Chrome বা Safari দিয়ে খুলুন");sha("swadeshi-agro|"+u+"|"+p).then(function(h){if(USERS[u]&&USERS[u]===h){ME=u;try{localStorage.setItem("sa_auth",u+":"+h)}catch(e){}AUTH=true;draw()}else toast("ইউজারনেম বা পাসওয়ার্ড ভুল হয়েছে")})}
+function lo(){try{localStorage.removeItem("sa_auth")}catch(e){}AUTH=false;ME="";draw()}
+document.addEventListener("keydown",function(e){if(e.key==="Enter"&&!AUTH&&document.getElementById("lgu"))dologin()});
 function draw(){
  pendDraw=false;
+ if(!AUTH){document.getElementById("nav").innerHTML="";document.getElementById("app").innerHTML=loginHtml();return}
  var T=[["home","🏠","হোম"],["eggs","🥚","ডিম"],["inc","🔌","ইনকিউবেটর"],["chicks","🐥","বাচ্চা"],["flock","🐓","মুরগি"],["wt","⚖️","ওজন"],["feed","🌾","খাবার"],["money","💰","হিসাব"],["rates","📈","রেট"]];
  document.getElementById("nav").innerHTML=T.map(function(x){return "<a href='javascript:void(0)' class='"+(x[0]===tab?"on":"")+"' onclick='go(\""+x[0]+"\")'>"+x[1]+"<br>"+x[2]+"</a>"}).join("");
  var on=document.querySelector("nav a.on"),nv=document.getElementById("nav");if(on)nv.scrollLeft=on.offsetLeft-nv.clientWidth/2+on.clientWidth/2;
- document.getElementById("app").innerHTML="<div class='hd'><img src='"+LOGO+"' alt=''><div><b>স্বদেশী এগ্রো</b><span>100% Organic &amp; Pure</span></div></div>"+(NOTICE?"<div class='box warn bad'>"+NOTICE+"</div>":"")+({home:home,eggs:eggs,inc:inc,chicks:chicks,flock:flock,wt:wt,feed:feed,money:money,rates:ratesTab,meds:meds,tips:tips})[tab]();
+ document.getElementById("app").innerHTML="<div class='hd'><img src='"+LOGO+"' alt=''><div><b>স্বদেশী এগ্রো</b><span>100% Organic &amp; Pure</span><br><span>👤 "+(NAMES[ME]||ME)+" · <a href='javascript:void(0)' onclick='lo()' style='color:var(--sub);text-decoration:underline'>লগআউট</a></span></div></div>"+(NOTICE?"<div class='box warn bad'>"+NOTICE+"</div>":"")+({home:home,eggs:eggs,inc:inc,chicks:chicks,flock:flock,wt:wt,feed:feed,money:money,rates:ratesTab,meds:meds,tips:tips})[tab]();
 }
 var R=null,ready=false,pendDraw=false,NOTICE="",COLS=["eggs","esale","inc","chk","med","feed","led","wt","cfg","flock"];
 function busy(){var a=document.activeElement,app=document.getElementById("app");if(a&&app.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return true;return Array.prototype.some.call(app.querySelectorAll("input,textarea"),function(e){return e.value!==e.defaultValue})}
