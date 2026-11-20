@@ -12,10 +12,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<script src="config.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d2f7d;--card:#fff;--inp:#f2f6fd;--ink:#14213d;--mute:#5a6785;--line:#dbe3f3;--ac:#17802a;--acx:#fff;--yolk:#e39a0b;--red:#c62828;--onbg:#fff;--sub:#ffd27a;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -66,7 +63,7 @@ textarea{width:100%;font:inherit;color:var(--ink);background:var(--inp);border:1
 <main id="app"></main>
 <nav id="nav"></nav>
 <script>
-var GATE="",USER="",started=false,KEY="khamar_v3",tab="home",panel=null,SETTER=400,HATCHER=200,TDAY=18,CAND=5,TEMP=37.7,H1=60,H2=70,HPH=4;
+var KEY="khamar_v3",tab="home",panel=null,SETTER=400,HATCHER=200,TDAY=18,CAND=5,TEMP=37.7,H1=60,H2=70,HPH=4;
 function iso(d){var m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(x<10?"0":"")+x}
 function today(){return iso(new Date())}
 function dt(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
@@ -87,7 +84,7 @@ function fresh(){return{eggs:[],esale:[],inc:[],chk:[],med:[],feed:[],led:[],wt:
 {id:4,type:"মোরগ",n:12,n0:12,age:null,asOf:D0,price:500,dead:0}]}}
 var db=fresh();
 try{var sv=localStorage.getItem(KEY);if(sv)Object.assign(db,JSON.parse(sv));else{localStorage.removeItem("khamar_v1");localStorage.removeItem("khamar_v2")}}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}if(R){if(ready)push();else toast("ডাটা এখনো লোড হয়নি, এই লেখা সংরক্ষণ হয়নি। একটু পরে আবার চেষ্টা করুন।")}autoBk()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}autoBk()}
 function put(k,o){db[k].push(o);save();draw()}
 var tt;function toast(m){var e=document.getElementById("toast");if(!e){e=document.createElement("div");e.id="toast";document.body.appendChild(e)}e.textContent=m;e.style.display="block";clearTimeout(tt);tt=setTimeout(function(){e.style.display="none"},3500)}
 window.alert=function(m){toast(m)};
@@ -99,7 +96,7 @@ function dm(){var m=document.getElementById("modal");if(!m){m=document.createEle
  var e=document.getElementById("mf0");if(e&&e.tagName==="INPUT")e.focus()}
 function mx(){MD=null;dm()}
 function mok(){var m=MD,a=m.f.map(function(f,i){return document.getElementById("mf"+i).value});MD=null;dm();m.cb(a)}
-var PW=(window.APP_CONFIG&&window.APP_CONFIG.deletePassword)||"123456";
+var PW="123456";
 function del(k,i){ask("মুছতে পাসওয়ার্ড দিন",[{l:"পাসওয়ার্ড",type:"pass"}],function(a){if(a[0]!==PW)return alert("পাসওয়ার্ড ভুল হয়েছে, কিছু মোছা হয়নি");db[k]=db[k].filter(function(x){return x.id!==i});save();draw();alert("মুছে গেছে")},"মুছুন")}
 function go(t){tab=t;panel=null;draw();window.scrollTo(0,0)}
 function F(l,i,t,d,x){return "<label>"+l+"</label><input id='"+i+"' type='"+t+"' value='"+(d==null?"":d)+"' "+(x||"")+">"}
@@ -212,9 +209,6 @@ function home(){
  "<div class='it'><span>২০০ ডিমে আনুমানিক বাচ্চা ("+(hr==null?"৭৫% ধরে":"আপনার গড় "+bn(hr)+"%")+")</span><b>"+bn(Math.round(200*(hr==null?75:hr)/100))+"টি</b></div></div>"+
  bkBox();
 }
-function rs(){ask("ব্যাকআপের লেখা এখানে পেস্ট করুন (এখনকার ডাটা বদলে পুরোনো ডাটা বসবে)",[{l:"ব্যাকআপ লেখা",type:"area",d:""}],function(a){var o;try{o=JSON.parse(String(a[0]).trim())}catch(e){return alert("লেখাটা ঠিক নেই। পুরোটা কপি করে পেস্ট করুন")}
- if(!o||typeof o!=="object"||!COLS.every(function(k){return o[k]===undefined||Array.isArray(o[k])})||!COLS.some(function(k){return o[k]&&o[k].length}))return alert("এটা ব্যাকআপের লেখা মনে হচ্ছে না");
- COLS.forEach(function(k){o[k]=o[k]||[]});db=o;mig();save();draw();alert("পুরোনো ডাটা ফিরে এসেছে")},"ফিরিয়ে আনুন")}
 function bk(){var j=JSON.stringify(db);function show(){ask("ব্যাকআপের লেখা কপি করে Notes বা WhatsApp-এ রাখুন",[{l:"ব্যাকআপ লেখা",type:"area",d:j}],function(){},"ঠিক আছে")}
  try{navigator.clipboard.writeText(j).then(function(){alert("কপি হয়েছে। Notes বা WhatsApp-এ পেস্ট করে রাখুন।")},show)}catch(e){show()}}
 
@@ -535,8 +529,7 @@ function meds(){
 
 
 /* ---------- সাজেশন বক্স ---------- */
-var SMP=null,SMPOUT="",SMPBUSY=false;
-function initSample(){try{var c=window.claude;if(!c||!c.use)return;c.use("sample").then(function(x){SMP=x||null;if(tab==="tips")softDraw()}).catch(function(){})}catch(e){}}
+
 function eggsOn(d){return sum(db.eggs.filter(function(x){return x.date===d&&!x.open}),function(x){return (x.seed||0)+(x.table||0)})}
 function eggDays(n,skip){var t=today(),out=[],k=skip?1:0,g=0;while(out.length<n&&g<40){var d=addD(t,-k);if(db.eggs.some(function(x){return x.date===d&&!x.open}))out.push(eggsOn(d));k++;g++}return out}
 function avgOf(a){return a.length?sum(a,function(x){return x})/a.length:0}
@@ -601,15 +594,11 @@ function farmSummary(){var t=today(),L=["আজ: "+t+" (বাংলাদেশ
  db.inc.forEach(function(x){L.push("- ব্যাচ শুরু "+x.start+": "+x.count+"টি ডিম"+(x.hatched!=null?", ফুটেছে "+x.hatched:", চলছে")+(x.cands&&x.cands.length?", বাওয়া "+cd(x).clear+", নষ্ট "+cd(x).rot+", ভাঙা "+cd(x).broken:""))});
  L.push("বাচ্চা মজুদ "+chickStock()+"টি, মৃত বাচ্চা "+sum(db.chk.filter(function(x){return x.kind==="die"}),function(x){return x.n})+"টি");
  return L.join("\n")}
-function askQ(q){q=q||document.getElementById("aq").value;if(!q)return alert("প্রশ্ন লিখুন বা নিচের বাটন চাপুন");if(!SMP||SMPBUSY)return;SMPBUSY=true;SMPOUT="উত্তর তৈরি হচ্ছে...";showOut();
- var pr="তুমি বাংলাদেশের দেশি মুরগির খামারের অভিজ্ঞ পরামর্শদাতা। নিচের খামারের আসল হিসাব দেখে বাংলায় সংক্ষেপে (১২ লাইনের মধ্যে) উত্তর দাও: সম্ভাব্য কারণ, কী করণীয়, কোন ভিটামিন বা ওষুধ কাজে লাগতে পারে। অ্যান্টিবায়োটিক বা ওষুধ নিশ্চিত করে দিও না, মাত্রা লেবেল বা পশু চিকিৎসক অনুযায়ী বলো। তথ্য না থাকলে অনুমান করে বানিয়ে বলো না।\n\nখামারের তথ্য:\n"+farmSummary()+"\n\nপ্রশ্ন: "+q;
- SMP(pr,{onText:function(r){SMPOUT=r.text;showOut()}}).then(function(r){SMPOUT=r.text;SMPBUSY=false;showOut()}).catch(function(e){SMPBUSY=false;SMPOUT=e&&e.code==="not_granted"?"অনুমতি দেওয়া হয়নি।":e&&e.code==="rate_limited"?"একটু পরে আবার চেষ্টা করুন।":"উত্তর আনা যায়নি, আবার চেষ্টা করুন।";showOut()})}
-function showOut(){var e=document.getElementById("aout");if(e)e.innerHTML=esc(SMPOUT).replace(/\*\*/g,"").replace(/^#+\s*/gm,"").replace(/\n/g,"<br>")}
 function tips(){
  var e7=eggDays(7,false),a7=avgOf(e7),hens=birds("মুরগি"),lay=layersN()||hens,gpb=birds()?autoKg()*1000/birds():0,fpd=feedPerDay(),ap=feedAvgPrice();
  var r="<h1>💡 সাজেশন বক্স</h1><div class='sum'><div class='y'><b>"+bn(a7)+"টি</b><span>দিনে ডিম (গত "+bn(e7.length)+" দিনের গড়)</span></div><div><b>"+(lay&&a7?bn(a7/lay*100)+"%":"—")+"</b><span>ডিম পাড়ার হার</span></div><div><b>"+(gpb?bn(gpb)+" গ্রাম":"—")+"</b><span>প্রতি মুরগি/মোরগ খাবার</span></div><div><b>"+(a7&&fpd&&ap?tk(fpd*ap/a7):"—")+"</b><span>প্রতি ডিমে খাবার খরচ</span></div></div>";
  r+=sug().map(sugCard).join("");
- r+=SMP?"<h2>🤖 Claude-কে জিজ্ঞেস করুন</h2><div class='box'>"+F("আপনার প্রশ্ন (খামারের হিসাব দেখে উত্তর দেবে)","aq","text","","placeholder='যেমন: আজ ডিম কম কেন?'")+"<div class='row3' style='margin-top:8px'><button onclick='askQ(\"আজ ডিম কম পেলাম কেন, কী করব?\")'>ডিম কম কেন?</button><button onclick='askQ(\"মুরগির ওজন ও খাবার কেমন চলছে, ওজন বাড়াতে কী করব?\")'>ওজন, খাবার</button><button onclick='askQ(\"ডিম, বাচ্চা, খাবার মিলিয়ে আমার খামারের সবচেয়ে বড় সমস্যা কী?\")'>বড় সমস্যা</button></div><button onclick='askQ()'>জিজ্ঞেস করুন</button><div id='aout' style='margin-top:10px;line-height:1.6'>"+esc(SMPOUT).replace(/\*\*/g,"").replace(/\n/g,"<br>")+"</div><small>এটা আপনার খামারের হিসাব দেখে Claude-এর সাধারণ পরামর্শ, পশু চিকিৎসকের বিকল্প নয়।</small></div>":"";
+ 
  return r}
 
 
@@ -635,61 +624,15 @@ function tundo(i){var a=AL[i];if(!a)return;db.cfg=(db.cfg||[]).filter(function(c
 var LOGO="logo-256.png";
 function draw(){
  pendDraw=false;
- if(GATE){document.getElementById("nav").innerHTML="";document.getElementById("app").innerHTML=GATE;return}
  var T=[["home","🏠","হোম"],["eggs","🥚","ডিম"],["inc","🔌","ইনকিউবেটর"],["chicks","🐥","বাচ্চা"],["flock","🐓","মুরগি"],["wt","⚖️","ওজন"],["feed","🌾","খাবার"],["money","💰","হিসাব"],["rates","📈","রেট"]];
  document.getElementById("nav").innerHTML=T.map(function(x){return "<a href='javascript:void(0)' class='"+(x[0]===tab?"on":"")+"' onclick='go(\""+x[0]+"\")'>"+x[1]+"<br>"+x[2]+"</a>"}).join("");
  var on=document.querySelector("nav a.on"),nv=document.getElementById("nav");if(on)nv.scrollLeft=on.offsetLeft-nv.clientWidth/2+on.clientWidth/2;
- document.getElementById("app").innerHTML="<div class='hd'><img src='"+LOGO+"' alt=''><div><b>স্বদেশী এগ্রো</b><span>100% Organic &amp; Pure</span><br><span>"+(MODE==="shared"?"🟢 শেয়ার্ড: দুজনেই দেখবেন":"📱 শুধু এই ফোনে")+(USER?" · "+esc(USER)+" · <a href='javascript:void(0)' onclick='lo()' style='color:var(--sub);text-decoration:underline'>লগআউট</a>":"")+"</span></div></div>"+(NOTICE?"<div class='box warn bad'>"+NOTICE+"</div>":"")+({home:home,eggs:eggs,inc:inc,chicks:chicks,flock:flock,wt:wt,feed:feed,money:money,rates:ratesTab,meds:meds,tips:tips})[tab]();
+ document.getElementById("app").innerHTML="<div class='hd'><img src='"+LOGO+"' alt=''><div><b>স্বদেশী এগ্রো</b><span>100% Organic &amp; Pure</span></div></div>"+(NOTICE?"<div class='box warn bad'>"+NOTICE+"</div>":"")+({home:home,eggs:eggs,inc:inc,chicks:chicks,flock:flock,wt:wt,feed:feed,money:money,rates:ratesTab,meds:meds,tips:tips})[tab]();
 }
-/* ---------- শেয়ার্ড ডাটা (দুজন মিলে এন্ট্রি ও দেখা) ---------- */
-var R=null,ready=false,OWN=false,first={},REM={},last={},wq={},errShown=false,pendDraw=false,MODE="local",NOTICE="",COLS=["eggs","esale","inc","chk","med","feed","led","wt","cfg","flock"];
-function clone(o){return JSON.parse(JSON.stringify(o))}
-function wr(k,i,f){var key=k+"/"+i;wq[key]=(wq[key]||Promise.resolve()).then(function(){return f(R.collection(k).doc(i))}).catch(function(e){if(!errShown){errShown=true;toast(e&&(e.code==="invalid_argument"||e.code==="permission-denied")?"লেখার অনুমতি নেই। মালিককে বলুন Firestore rules-এ আপনার ইমেইল যোগ করতে।":"সংরক্ষণে সমস্যা হয়েছে। ইন্টারনেট দেখে আবার চেষ্টা করুন।")}})}
-function push(){COLS.forEach(function(k){var cur={},l=last[k]||{};(db[k]||[]).forEach(function(x){cur[String(x.id)]=JSON.stringify(x)});
- Object.keys(cur).forEach(function(i){if(l[i]!==cur[i]){l[i]=cur[i];(function(i,j){wr(k,i,function(d){return d.set(JSON.parse(j))})})(i,cur[i])}});
- Object.keys(l).forEach(function(i){if(!(i in cur)){delete l[i];wr(k,i,function(d){return d.delete()})}});last[k]=l})}
-function apply(k){db[k]=REM[k]||[];var l={};db[k].forEach(function(x){l[String(x.id)]=JSON.stringify(x)});last[k]=l}
+var R=null,ready=false,pendDraw=false,NOTICE="",COLS=["eggs","esale","inc","chk","med","feed","led","wt","cfg","flock"];
 function busy(){var a=document.activeElement,app=document.getElementById("app");if(a&&app.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return true;return Array.prototype.some.call(app.querySelectorAll("input,textarea"),function(e){return e.value!==e.defaultValue})}
 function softDraw(){if(busy())pendDraw=true;else draw()}
 setInterval(function(){if(pendDraw&&!busy()){pendDraw=false;draw()}},2500);
-function onSnap(k,snap){
- if(snap.metadata.fromCache&&snap.empty)return;
- if(!snap.metadata.fromCache)first[k]=true;
- REM[k]=snap.docs.map(function(d){return clone(d.data())}).sort(function(a,b){return a.id<b.id?-1:1});
- if(ready){apply(k);softDraw();return}
- check()}
-function check(){
- if(!COLS.every(function(k){return first[k]}))return;
- var any=COLS.some(function(k){return REM[k]&&REM[k].length});
- if(any){COLS.forEach(apply);ready=true;MODE="shared";NOTICE="";if(OWN){seed2();seed3()}draw();return}
- if(OWN){ready=true;MODE="shared";NOTICE="";seed2();seed3();push();draw();return}
- NOTICE="মালিক এখনো ডাটা শেয়ার করেননি। মালিককে আগে একবার এই লিংক খুলতে বলুন, তারপর পেজ রিফ্রেশ করুন।";draw()}
-var CFG=window.APP_CONFIG||{};
-function cfgOK(){var f=CFG.firebase;return !!(f&&f.apiKey&&String(f.apiKey).indexOf("YOUR_")<0&&window.firebase&&firebase.firestore)}
-function splash(msg,btn){return "<div style='text-align:center;color:#fff;padding:56px 10px'><img src='logo-256.png' alt='' style='width:120px;height:120px;border-radius:50%'><h1 style='margin:14px 0 4px;font-size:26px'>স্বদেশী এগ্রো</h1><div style='color:var(--sub);margin-bottom:22px'>100% Organic &amp; Pure</div>"+msg+(btn||"")+"</div>"}
-function loginHtml(){var U=CFG.users||{};return splash("<div style='background:var(--card);color:var(--ink);border-radius:12px;padding:14px;max-width:320px;margin:0 auto;text-align:left'>"+S("কে ঢুকছেন","lgu",Object.keys(U))+F("পাসওয়ার্ড","lgp","password","","autocomplete=current-password")+"<button onclick='dologin()'>ঢুকুন</button></div>")}
-function dologin(){var n=v("lgu"),p=v("lgp"),em=(CFG.users||{})[n];if(!em||!p)return toast("নাম ও পাসওয়ার্ড দিন");firebase.auth().signInWithEmailAndPassword(em,p).catch(function(e){var c=e&&e.code||"";toast(c==="auth/invalid-credential"||c==="auth/wrong-password"||c==="auth/user-not-found"?"পাসওয়ার্ড ভুল হয়েছে":"লগইন হয়নি ("+c+")")})}
-function gsign(){try{firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(e){toast("লগইন হয়নি ("+(e&&e.code||"")+")। আবার চেষ্টা করুন।")})}catch(e){toast("লগইন চালু করা যায়নি")}}
-function lo(){try{firebase.auth().signOut().then(function(){location.reload()})}catch(e){}}
-async function initRemote(){
- if(!cfgOK())return;
- try{
-  firebase.initializeApp(CFG.firebase);
-  var fs=firebase.firestore();
-  try{await fs.enablePersistence({synchronizeTabs:true})}catch(e){}
-  GATE=splash("লোড হচ্ছে...");draw();
-  firebase.auth().onAuthStateChanged(function(u){
-   if(!u){GATE=loginHtml();draw();return}
-   if(started)return;started=true;
-   var em=(u.email||"").toLowerCase();
-   OWN=em===String(CFG.owner||"").toLowerCase();USER=Object.keys(CFG.users||{}).filter(function(k){return String(CFG.users[k]).toLowerCase()===em})[0]||em;GATE="";
-   R=fs.collection("farms").doc("main");
-   R.collection("backups").onSnapshot(function(sn){BKC=sn.docs.map(function(q){var x=q.data();return{id:q.id,t:x.t,n:x.n,s:x.s}});softDraw()},function(){});
-   COLS.forEach(function(k){R.collection(k).onSnapshot(function(sn){onSnap(k,sn)},function(e){NOTICE=e&&e.code==="permission-denied"?"এই অ্যাকাউন্টের অনুমতি নেই। Firestore rules-এ ইমেইল ঠিক আছে কিনা দেখুন।":"ডাটা আনতে সমস্যা হয়েছে ("+(e&&e.code||"")+")";draw()})});
-   draw();
-   setTimeout(function(){if(!ready&&!NOTICE){NOTICE="ডাটা এখনো আনা যায়নি। ইন্টারনেট দেখুন, ডাটা না আসা পর্যন্ত নতুন কিছু লিখবেন না।";draw()}},10000);
-  });
- }catch(e){GATE="";NOTICE="অনলাইন সংযোগ চালু করা যায়নি, এই ফোনে আলাদা চলছে."}}
 
 /* ---------- অটো ব্যাকআপ ---------- */
 var bkT,BKC=[],BKV=[],lastBk="";
@@ -697,13 +640,13 @@ function LB(){try{return JSON.parse(localStorage.getItem("khamar_bk3")||"[]")}ca
 function total(){return COLS.reduce(function(t,k){return t+(db[k]||[]).length},0)}
 function doBk(){var s=JSON.stringify(db);if(s===lastBk)return;lastBk=s;var t=Date.now(),n=total();
  try{var a=LB();a.unshift({t:t,n:n,s:s});localStorage.setItem("khamar_bk3",JSON.stringify(a.slice(0,8)))}catch(e){}
- if(R&&ready&&s.length<240000){wr("backups",today(),function(d){return d.set({t:t,n:n,s:s})});BKC.forEach(function(x){if(diff(today(),x.id)>14)wr("backups",x.id,function(d){return d.delete()})})}}
+ }
 function autoBk(){clearTimeout(bkT);bkT=setTimeout(doBk,2500)}
 function fdt(t){return new Date(t).toLocaleString("bn-BD",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"})}
 function bkBox(){
  var a=[];BKC.forEach(function(x){a.push({t:x.t,n:x.n})});LB().forEach(function(x){a.push({t:x.t,n:x.n})});
  a.sort(function(x,y){return y.t-x.t});
- return "<h2>অটো ব্যাকআপ</h2><div class='box'><b class='ok'>✓ চালু আছে</b><small>প্রতিটি এন্ট্রির কয়েক সেকেন্ড পর নিজে কপি তৈরি হয়। ক্লাউডে প্রতিদিনের কপি ১৪ দিন থাকে (শেয়ার্ড মোডে), এই ফোনে সর্বশেষ ৮টি।"+(a[0]?"<br>শেষ কপি: "+fdt(a[0].t)+" · "+bn(a[0].n)+"টি এন্ট্রি":"<br>এখনো কোনো কপি হয়নি")+"</small><button class='g' onclick='bk()'>নিজে কপি করে রাখুন (Notes/WhatsApp)</button><button class='g' onclick='rs()'>ব্যাকআপ থেকে ফিরিয়ে আনুন</button></div>"}
+ return "<h2>অটো ব্যাকআপ</h2><div class='box'><b class='ok'>✓ চালু আছে</b><small>প্রতিটি এন্ট্রির কয়েক সেকেন্ড পর নিজে কপি তৈরি হয়। এই ফোনে সর্বশেষ ৮টি কপি থাকে। ডাটা শুধু এই ফোনেই থাকে, তাই মাঝে মাঝে নিজে কপি করে Notes/WhatsApp-এ রাখুন।"+(a[0]?"<br>শেষ কপি: "+fdt(a[0].t)+" · "+bn(a[0].n)+"টি এন্ট্রি":"<br>এখনো কোনো কপি হয়নি")+"</small><button class='g' onclick='bk()'>নিজে কপি করে রাখুন (Notes/WhatsApp)</button></div>"}
 
 mig();
 if(!db.m1){db.m1=1;
@@ -711,8 +654,7 @@ if(!db.m1){db.m1=1;
  db.inc.push({id:id(),name:"২৫ অক্টোবর ব্যাচ",count:241,days:21,start:"2026-10-25",cands:[{clear:31,rot:0,broken:0,date:"2026-10-31"}],tr:null,hatched:null});
  db.esale.push({id:id(),date:"2026-10-31",n:31,price:20,bad:0});save()}
 draw();
-initRemote().then(function(){if(!R&&!GATE){seed2();seed3();draw()}});
-initSample();
+seed2();seed3();draw();
 if("serviceWorker" in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
 </script>
 </body>
