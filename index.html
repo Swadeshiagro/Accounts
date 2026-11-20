@@ -212,6 +212,9 @@ function home(){
  "<div class='it'><span>২০০ ডিমে আনুমানিক বাচ্চা ("+(hr==null?"৭৫% ধরে":"আপনার গড় "+bn(hr)+"%")+")</span><b>"+bn(Math.round(200*(hr==null?75:hr)/100))+"টি</b></div></div>"+
  bkBox();
 }
+function rs(){ask("ব্যাকআপের লেখা এখানে পেস্ট করুন (এখনকার ডাটা বদলে পুরোনো ডাটা বসবে)",[{l:"ব্যাকআপ লেখা",type:"area",d:""}],function(a){var o;try{o=JSON.parse(String(a[0]).trim())}catch(e){return alert("লেখাটা ঠিক নেই। পুরোটা কপি করে পেস্ট করুন")}
+ if(!o||typeof o!=="object"||!COLS.every(function(k){return o[k]===undefined||Array.isArray(o[k])})||!COLS.some(function(k){return o[k]&&o[k].length}))return alert("এটা ব্যাকআপের লেখা মনে হচ্ছে না");
+ COLS.forEach(function(k){o[k]=o[k]||[]});db=o;mig();save();draw();alert("পুরোনো ডাটা ফিরে এসেছে")},"ফিরিয়ে আনুন")}
 function bk(){var j=JSON.stringify(db);function show(){ask("ব্যাকআপের লেখা কপি করে Notes বা WhatsApp-এ রাখুন",[{l:"ব্যাকআপ লেখা",type:"area",d:j}],function(){},"ঠিক আছে")}
  try{navigator.clipboard.writeText(j).then(function(){alert("কপি হয়েছে। Notes বা WhatsApp-এ পেস্ট করে রাখুন।")},show)}catch(e){show()}}
 
@@ -700,7 +703,7 @@ function fdt(t){return new Date(t).toLocaleString("bn-BD",{day:"numeric",month:"
 function bkBox(){
  var a=[];BKC.forEach(function(x){a.push({t:x.t,n:x.n})});LB().forEach(function(x){a.push({t:x.t,n:x.n})});
  a.sort(function(x,y){return y.t-x.t});
- return "<h2>অটো ব্যাকআপ</h2><div class='box'><b class='ok'>✓ চালু আছে</b><small>প্রতিটি এন্ট্রির কয়েক সেকেন্ড পর নিজে কপি তৈরি হয়। ক্লাউডে প্রতিদিনের কপি ১৪ দিন থাকে (শেয়ার্ড মোডে), এই ফোনে সর্বশেষ ৮টি।"+(a[0]?"<br>শেষ কপি: "+fdt(a[0].t)+" · "+bn(a[0].n)+"টি এন্ট্রি":"<br>এখনো কোনো কপি হয়নি")+"</small><button class='g' onclick='bk()'>নিজে কপি করে রাখুন (Notes/WhatsApp)</button><small>কোনো ভুল হলে এই চ্যাটে জানান, ব্যাকআপ থেকে ঠিক করার ব্যবস্থা হবে।</small></div>"}
+ return "<h2>অটো ব্যাকআপ</h2><div class='box'><b class='ok'>✓ চালু আছে</b><small>প্রতিটি এন্ট্রির কয়েক সেকেন্ড পর নিজে কপি তৈরি হয়। ক্লাউডে প্রতিদিনের কপি ১৪ দিন থাকে (শেয়ার্ড মোডে), এই ফোনে সর্বশেষ ৮টি।"+(a[0]?"<br>শেষ কপি: "+fdt(a[0].t)+" · "+bn(a[0].n)+"টি এন্ট্রি":"<br>এখনো কোনো কপি হয়নি")+"</small><button class='g' onclick='bk()'>নিজে কপি করে রাখুন (Notes/WhatsApp)</button><button class='g' onclick='rs()'>ব্যাকআপ থেকে ফিরিয়ে আনুন</button></div>"}
 
 mig();
 if(!db.m1){db.m1=1;
