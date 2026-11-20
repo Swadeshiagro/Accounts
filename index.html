@@ -14,6 +14,9 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 :root{--bg:#0d2f7d;--card:#fff;--inp:#f2f6fd;--ink:#14213d;--mute:#5a6785;--line:#dbe3f3;--ac:#17802a;--acx:#fff;--yolk:#e39a0b;--red:#c62828;--onbg:#fff;--sub:#ffd27a;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#081c4d;--card:#13264f;--inp:#0d1b3d;--ink:#e8eefc;--mute:#9fb0d6;--line:#2a3d70;--ac:#3fae52;--acx:#06210c;--yolk:#f0b83a;--red:#ff8a80;color-scheme:dark}}
@@ -84,7 +87,71 @@ function fresh(){return{eggs:[],esale:[],inc:[],chk:[],med:[],feed:[],led:[],wt:
 {id:4,type:"মোরগ",n:12,n0:12,age:null,asOf:D0,price:500,dead:0}]}}
 var db=fresh();
 try{var sv=localStorage.getItem(KEY);if(sv)Object.assign(db,JSON.parse(sv));else{localStorage.removeItem("khamar_v1");localStorage.removeItem("khamar_v2")}}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}autoBk()}
+var BOOT=true;
+function save(){EV++;if(!BOOT)db._ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}autoBk();pushSoon()}
+/* ---------- Firebase সিঙ্ক (দুজনের এন্ট্রি মিলিয়ে নেয়) ---------- */
+var FB_CONFIG={apiKey:"AIzaSyA3Vk-cNlKVxU0dRLOD2uPaybJcGYMVMU4",authDomain:"swdeshiagro-66253.firebaseapp.com",projectId:"swdeshiagro-66253",storageBucket:"swdeshiagro-66253.firebasestorage.app",messagingSenderId:"256418196585",appId:"1:256418196585:web:9f518a94e10c92e82986f8"};
+var FS=null,SYN="off",pushT,lastPushed=0,MYTS=0,EV=0,PUSHING=false,AGAIN=false,BKEY="khamar_base3",BASE="";
+try{BASE=localStorage.getItem(BKEY)||"";if(BASE)lastPushed=(JSON.parse(BASE)._ts||0)}catch(e){BASE=""}
+function synTxt(){return ({off:"☁️ সিঙ্ক বন্ধ (শুধু এই ফোনে)",wait:"⏳ সিঙ্ক হচ্ছে…",ok:"☁️ সিঙ্ক হয়েছে",err:"⚠️ সিঙ্ক হয়নি, ইন্টারনেট দেখুন"})[SYN]}
+function setSt(x){SYN=x;var e=document.getElementById("syn");if(e)e.innerHTML=synTxt()}
+function idx(a){var o={};(a||[]).forEach(function(x){o[String(x.id)]=x});return o}
+function same(a,b){return JSON.stringify(a)===JSON.stringify(b)}
+/* base = শেষবার সিঙ্ক হওয়া অবস্থা, loc = এই ফোন, rem = ক্লাউড। দুজনের যোগ/বদল/মোছা সব মিলিয়ে নেয় */
+function merge(baseStr,loc,rem){
+ var b={};try{b=JSON.parse(baseStr||"{}")}catch(e){}
+ var out=Object.assign({},loc,rem);
+ COLS.forEach(function(k){var B=idx(b[k]),L=idx(loc[k]),R=idx(rem[k]),res=[],seen={};
+  function pick(i){var bi=B[i],li=L[i],ri=R[i];
+   if(li&&ri)return(bi&&same(li,bi))?ri:li;
+   if(li)return(bi&&same(li,bi))?null:li;
+   if(ri)return(bi&&same(ri,bi))?null:ri;
+   return null}
+  (rem[k]||[]).forEach(function(x){var i=String(x.id);seen[i]=1;var q=pick(i);if(q)res.push(q)});
+  (loc[k]||[]).forEach(function(x){var i=String(x.id);if(seen[i])return;seen[i]=1;var q=pick(i);if(q)res.push(q)});
+  out[k]=res});
+ return out}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(db));localStorage.setItem(BKEY,BASE)}catch(e){}}
+function pushSoon(){if(!FS)return;setSt("wait");clearTimeout(pushT);pushT=setTimeout(push,1500)}
+function push(){
+ if(!FS)return Promise.resolve();
+ if(PUSHING){AGAIN=true;return Promise.resolve()}
+ PUSHING=true;var before=JSON.stringify(db),ev0=EV,ref=FS.doc("farm/main"),out=null;
+ return FS.runTransaction(function(tx){return tx.get(ref).then(function(sn){
+  var ts=Date.now(),m=JSON.parse(before);
+  if(sn.exists){var d=sn.data();if((d.ts||0)>lastPushed){var r=null;try{r=JSON.parse(d.json)}catch(e){}if(r)m=merge(BASE,m,r)}}
+  m._ts=ts;out=m;MYTS=ts;tx.set(ref,{json:JSON.stringify(m),ts:ts,by:ME||""})})
+ }).then(function(){
+  var edited=EV!==ev0;
+  if(edited){var mm=merge(before,db,out);mm._ts=Math.max(db._ts||0,out._ts);db=mm;BASE=JSON.stringify(out)}
+  else{db=out;BASE=JSON.stringify(db)}
+  mig();lastPushed=out._ts;persist();PUSHING=false;
+  if(edited||AGAIN){AGAIN=false;pushSoon()}else setSt("ok");
+  softDraw()
+ },function(){PUSHING=false;setSt("err");clearTimeout(pushT);pushT=setTimeout(function(){if(JSON.stringify(db)!==BASE)pushSoon()},20000)})}
+function applyRemote(d){var n=fresh();try{Object.assign(n,JSON.parse(d.json))}catch(e){return}
+ db=n;db._ts=d.ts;lastPushed=d.ts;mig();BASE=JSON.stringify(db);persist();softDraw()}
+function startSync(){
+ if(FS||!FB_CONFIG.apiKey||!window.firebase){if(!FS)setSt("off");return}
+ try{firebase.initializeApp(FB_CONFIG);FS=firebase.firestore()}catch(e){setSt("err");return}
+ setSt("wait");
+ firebase.auth().signInAnonymously().then(function(){
+  var ref=FS.doc("farm/main");
+  return ref.get().then(function(sn){
+   if(!sn.exists)return push();
+   var d=sn.data(),r=d.ts||0;
+   if(BASE){
+    if(JSON.stringify(db)!==BASE)return push();
+    if(r>lastPushed)applyRemote(d)
+   }else{var l=db._ts||0;if(r>l)applyRemote(d);else if(l>r)return push();else{BASE=JSON.stringify(db);persist()}}
+   setSt("ok")
+  }).then(function(){
+   ref.onSnapshot(function(sn){if(!sn.exists||sn.metadata.hasPendingWrites)return;var d=sn.data(),r=d.ts||0;
+    if(r<=lastPushed||r===MYTS||PUSHING)return;
+    if(JSON.stringify(db)!==BASE)pushSoon();else{applyRemote(d);setSt("ok")}},function(){setSt("err")})
+  })
+ }).catch(function(e){setSt("err");toast("সিঙ্ক চালু হয়নি: "+((e&&e.code)||e))})}
+window.addEventListener("online",function(){if(FS&&JSON.stringify(db)!==BASE)pushSoon()});
 function put(k,o){db[k].push(o);save();draw()}
 var tt;function toast(m){var e=document.getElementById("toast");if(!e){e=document.createElement("div");e.id="toast";document.body.appendChild(e)}e.textContent=m;e.style.display="block";clearTimeout(tt);tt=setTimeout(function(){e.style.display="none"},3500)}
 window.alert=function(m){toast(m)};
@@ -636,7 +703,7 @@ function draw(){
  var T=[["home","🏠","হোম"],["eggs","🥚","ডিম"],["inc","🔌","ইনকিউবেটর"],["chicks","🐥","বাচ্চা"],["flock","🐓","মুরগি"],["wt","⚖️","ওজন"],["feed","🌾","খাবার"],["money","💰","হিসাব"],["rates","📈","রেট"]];
  document.getElementById("nav").innerHTML=T.map(function(x){return "<a href='javascript:void(0)' class='"+(x[0]===tab?"on":"")+"' onclick='go(\""+x[0]+"\")'>"+x[1]+"<br>"+x[2]+"</a>"}).join("");
  var on=document.querySelector("nav a.on"),nv=document.getElementById("nav");if(on)nv.scrollLeft=on.offsetLeft-nv.clientWidth/2+on.clientWidth/2;
- document.getElementById("app").innerHTML="<div class='hd'><img src='"+LOGO+"' alt=''><div><b>স্বদেশী এগ্রো</b><span>100% Organic &amp; Pure</span><br><span>👤 "+(NAMES[ME]||ME)+" · <a href='javascript:void(0)' onclick='lo()' style='color:var(--sub);text-decoration:underline'>লগআউট</a></span></div></div>"+(NOTICE?"<div class='box warn bad'>"+NOTICE+"</div>":"")+({home:home,eggs:eggs,inc:inc,chicks:chicks,flock:flock,wt:wt,feed:feed,money:money,rates:ratesTab,meds:meds,tips:tips})[tab]();
+ document.getElementById("app").innerHTML="<div class='hd'><img src='"+LOGO+"' alt=''><div><b>স্বদেশী এগ্রো</b><span>100% Organic &amp; Pure</span><br><span>👤 "+(NAMES[ME]||ME)+" · <a href='javascript:void(0)' onclick='lo()' style='color:var(--sub);text-decoration:underline'>লগআউট</a></span><br><span id='syn'>"+synTxt()+"</span></div></div>"+(NOTICE?"<div class='box warn bad'>"+NOTICE+"</div>":"")+({home:home,eggs:eggs,inc:inc,chicks:chicks,flock:flock,wt:wt,feed:feed,money:money,rates:ratesTab,meds:meds,tips:tips})[tab]();
 }
 var R=null,ready=false,pendDraw=false,NOTICE="",COLS=["eggs","esale","inc","chk","med","feed","led","wt","cfg","flock"];
 function busy(){var a=document.activeElement,app=document.getElementById("app");if(a&&app.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return true;return Array.prototype.some.call(app.querySelectorAll("input,textarea"),function(e){return e.value!==e.defaultValue})}
@@ -663,7 +730,7 @@ if(!db.m1){db.m1=1;
  db.inc.push({id:id(),name:"২৫ অক্টোবর ব্যাচ",count:241,days:21,start:"2026-10-25",cands:[{clear:31,rot:0,broken:0,date:"2026-10-31"}],tr:null,hatched:null});
  db.esale.push({id:id(),date:"2026-10-31",n:31,price:20,bad:0});save()}
 draw();
-seed2();seed3();draw();
+seed2();seed3();BOOT=false;draw();startSync();
 if("serviceWorker" in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
 </script>
 </body>
