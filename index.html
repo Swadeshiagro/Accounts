@@ -3,735 +3,244 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>স্বদেশী এগ্রো</title>
-<meta name="theme-color" content="#0d2f7d">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="স্বদেশী এগ্রো">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<title>স্বদেশী এগ্রো · ডেমো</title>
+<meta name="theme-color" content="#1f5c3a">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0d2f7d;--card:#fff;--inp:#f2f6fd;--ink:#14213d;--mute:#5a6785;--line:#dbe3f3;--ac:#17802a;--acx:#fff;--yolk:#e39a0b;--red:#c62828;--onbg:#fff;--sub:#ffd27a;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#081c4d;--card:#13264f;--inp:#0d1b3d;--ink:#e8eefc;--mute:#9fb0d6;--line:#2a3d70;--ac:#3fae52;--acx:#06210c;--yolk:#f0b83a;--red:#ff8a80;color-scheme:dark}}
+:root{--bg:#f3f6f2;--card:#fff;--ink:#1c2b21;--mute:#6a786e;--line:#e2e9e3;--ac:#2e7d4f;--ac2:#e6f2ea;--yolk:#d98a12;--yolk2:#fdf2e0;--bad:#c0392b;--bad2:#fbe9e7;--blue:#2d6cb0;--radius:16px;color-scheme:light}
 *{box-sizing:border-box}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Hind Siliguri",system-ui,sans-serif;padding-bottom:84px}
-main{max-width:560px;margin:0 auto;padding:14px}
-h1{font-size:21px;margin:4px 0 12px;color:var(--onbg)}
-h2{font-size:17px;margin:20px 0 8px;color:var(--sub)}
-.hd{display:flex;align-items:center;gap:12px;color:var(--onbg);padding-bottom:10px;margin-bottom:14px;border-bottom:3px solid var(--ac)}
-.hd img{width:56px;height:56px;border-radius:50%;flex-shrink:0;background:#fff}
-.hd b{display:block;font-size:23px;line-height:1.2}.hd span{font-size:13px;color:var(--sub);letter-spacing:.3px}
-.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-.sum div{background:var(--card);border-radius:10px;padding:9px 12px;border-left:5px solid var(--ac)}
-.sum .y{border-left-color:var(--yolk)}.sum .r{border-left-color:var(--red)}.sum .w{grid-column:1/3}
-.sum b{display:block;font-size:22px;line-height:1.3}
-.sum span{color:var(--mute);font-size:13px;display:block;line-height:1.35}
-.box{background:var(--card);border-radius:10px;padding:12px;margin-bottom:10px}
-.box.warn{border-left:5px solid var(--red)}
-label{display:block;font-size:13px;color:var(--mute);margin:8px 0 2px}
-input,select{width:100%;font:inherit;color:var(--ink);background:var(--inp);border:1px solid var(--line);border-radius:8px;padding:9px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:10px 14px;background:var(--ac);color:var(--acx);width:100%;margin-top:12px}
-button.s{width:auto;margin:3px 0 0 4px;padding:5px 10px;background:transparent;color:var(--red);border:1px solid var(--line);font-weight:500;font-size:14px}
-button.s.p{color:var(--ac);border-color:var(--ac)}
-button.g{background:transparent;color:var(--ac);border:1px solid var(--ac)}
-button.o{background:var(--yolk);color:#1b1200}
-.row3 button{margin:0;padding:9px 4px;font-size:14px;background:var(--yolk);color:#1b1200}
-.it{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
-.it:last-child{border:0}
-.it small{color:var(--mute);display:block}
-.act{text-align:right;flex-shrink:0}
-.bad{color:var(--red);font-weight:600}.ok{color:var(--ac);font-weight:600}
-.empty{color:var(--mute);text-align:center;padding:14px}
-.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:3px 0 8px}.bar i{display:block;height:100%;background:var(--ac)}
-nav{position:fixed;left:0;right:0;bottom:0;display:flex;overflow-x:auto;background:var(--ac);padding-bottom:env(safe-area-inset-bottom,0px)}
-nav a{flex:1 0 auto;min-width:68px;text-align:center;padding:8px 6px;font-size:12px;line-height:1.3;color:#e6f4e8;font-weight:500}
-nav a.on{color:#fff;font-weight:700;background:rgba(0,0,0,.18);box-shadow:inset 0 3px var(--yolk)}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding-bottom:env(safe-area-inset-bottom,0px)}
-.sheet{background:var(--card);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:16px}
-#toast{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom,0px));background:#111;color:#fff;padding:10px 14px;border-radius:10px;z-index:60;display:none;text-align:center}
-textarea{width:100%;font:inherit;color:var(--ink);background:var(--inp);border:1px solid var(--line);border-radius:8px;padding:9px;min-height:110px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans Bengali",system-ui,sans-serif;font-size:15px;line-height:1.75;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+header{background:linear-gradient(135deg,#1f5c3a,#2e7d4f);color:#fff;padding:calc(16px + env(safe-area-inset-top,0px)) 16px 22px;border-radius:0 0 26px 26px}
+.top{display:flex;align-items:center;gap:12px}
+.logo{width:48px;height:48px;border-radius:50%;background:#fff;object-fit:cover;flex-shrink:0}
+.top b{font-size:20px;display:block;line-height:1.2}
+.top span{font-size:12px;opacity:.85}
+select{width:100%;margin-top:14px;font:inherit;color:var(--ink);background:#fff;border:0;border-radius:12px;padding:11px 12px;font-weight:600}
+main{padding:14px;max-width:600px;margin:0 auto}
+h2{font-size:16px;margin:20px 4px 8px;display:flex;justify-content:space-between;align-items:center}
+h2 small{font-size:12px;color:var(--mute);font-weight:500}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:var(--card);border-radius:var(--radius);padding:12px 14px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.kpi span{font-size:12px;color:var(--mute);display:block}
+.kpi b{font-size:22px;display:block;line-height:1.3}
+.kpi.hi{background:var(--ac);color:#fff}.kpi.hi span{color:#d6ecde}
+.kpi.warn b{color:var(--yolk)}
+.card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}
+.row small{display:block;color:var(--mute);font-size:12px}
+.pill{font-size:12px;padding:2px 9px;border-radius:99px;background:var(--ac2);color:var(--ac);white-space:nowrap;font-weight:600}
+.pill.y{background:var(--yolk2);color:var(--yolk)}
+.pill.r{background:var(--bad2);color:var(--bad)}
+.pill.b{background:#e7f0fa;color:var(--blue)}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0 2px}
+.bar i{display:block;height:100%;background:var(--ac);border-radius:6px}
+.bar.y i{background:var(--yolk)}
+.alert{display:flex;gap:10px;align-items:flex-start;background:var(--yolk2);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.alert.r{background:var(--bad2)}
+.alert i{font-style:normal;font-size:18px;line-height:1.3}
+.alert b{font-size:14px}
+.alert small{display:block;color:var(--mute);font-size:12px}
+.chart{display:flex;align-items:flex-end;gap:6px;height:110px;padding-top:8px}
+.chart div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px;color:var(--mute)}
+.chart i{width:100%;background:linear-gradient(#f0b04a,#d98a12);border-radius:8px 8px 3px 3px;min-height:4px}
+.chart div.t i{background:linear-gradient(#4ea86b,#2e7d4f)}
+.btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}
+.btns button{font:inherit;font-size:13px;font-weight:600;border:0;border-radius:12px;padding:10px 4px;background:var(--ac2);color:var(--ac)}
+.btns button.o{background:var(--yolk2);color:var(--yolk)}
+nav{position:fixed;left:0;right:0;bottom:0;background:#fff;box-shadow:0 -2px 12px rgba(0,0,0,.08);display:flex;overflow-x:auto;padding-bottom:env(safe-area-inset-bottom,0px);z-index:10}
+nav button{flex:0 0 auto;min-width:66px;border:0;background:none;font:inherit;font-size:11px;color:var(--mute);padding:8px 6px;line-height:1.3}
+nav button .ic{display:block;font-size:20px;line-height:1.2}
+nav button.on{color:var(--ac);font-weight:700}
+nav button.on .ic{transform:translateY(-2px)}
+.empty{text-align:center;color:var(--mute);padding:16px}
+.note{font-size:12px;color:var(--mute);margin:6px 4px}
 </style>
 </head>
 <body>
+<header>
+  <div class="top">
+    <img class="logo" src="logo-256.png" alt="" onerror="this.style.display='none'">
+    <div><b>স্বদেশী এগ্রো</b><span id="dateTxt"></span></div>
+  </div>
+  <select id="batchSel" onchange="renderTab()">
+    <option value="all">📊 সব ব্যাচ (মোট)</option>
+    <option value="b1">ব্যাচ ১</option>
+  </select>
+</header>
+
 <main id="app"></main>
+
 <nav id="nav"></nav>
+
 <script>
-var KEY="khamar_v3",tab="home",panel=null,SETTER=400,HATCHER=200,TDAY=18,CAND=5,TEMP=37.7,H1=60,H2=70,HPH=4;
+var KEY="khamar_v3", TAB="home";
+var TABS=[["home","🏠","হোম"],["meat","🍗","মাংসের মুরগি"],["chick","🐥","বাচ্চা"],["egg","🥚","ডিম"],["feed","🌾","খাবার"],["med","💊","ওষুধ"],["money","💰","হিসাব"],["assets","🧺","এসেট"],["parent","🐓","প্যারেন্টস"]];
+
+/* ---------- helpers ---------- */
 function iso(d){var m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(x<10?"0":"")+x}
 function today(){return iso(new Date())}
 function dt(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
 function diff(a,b){return Math.round((dt(a)-dt(b))/864e5)}
 function addD(s,n){var d=dt(s);d.setDate(d.getDate()+n);return iso(d)}
-function fmt(s){return dt(s).toLocaleDateString("bn-BD",{day:"numeric",month:"short",year:"numeric"})}
-function bn(n){return Number(n).toLocaleString("bn-BD",{maximumFractionDigits:1})}
-function tk(n){return bn(Math.round(n))+" ৳"}
-function esc(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function bn(n){return Number(n||0).toLocaleString("bn-BD",{maximumFractionDigits:1})}
+function tk(n){return "৳"+Math.round(n||0).toLocaleString("bn-BD")}
+function fmt(s){return dt(s).toLocaleDateString("bn-BD",{day:"numeric",month:"short"})}
 function sum(a,f){return a.reduce(function(t,x){return t+(+f(x)||0)},0)}
-function id(){return Date.now()+Math.random()}
-function v(i){return document.getElementById(i).value}
-var D0=today();
-function fresh(){return{eggs:[],esale:[],inc:[],chk:[],med:[],feed:[],led:[],wt:[],cfg:[],flock:[
-{id:1,type:"মুরগি",n:5,n0:5,age:7,asOf:D0,price:700,dead:0},
-{id:2,type:"মুরগি",n:18,n0:18,age:11,asOf:D0,price:650,dead:0},
-{id:3,type:"মুরগি",n:16,n0:16,age:5,asOf:D0,price:500,dead:0},
-{id:4,type:"মোরগ",n:12,n0:12,age:null,asOf:D0,price:500,dead:0}]}}
-var db=fresh();
-try{var sv=localStorage.getItem(KEY);if(sv)Object.assign(db,JSON.parse(sv));else{localStorage.removeItem("khamar_v1");localStorage.removeItem("khamar_v2")}}catch(e){}
-var BOOT=true;
-function save(){EV++;if(!BOOT)db._ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}autoBk();pushSoon()}
-/* ---------- Firebase সিঙ্ক (দুজনের এন্ট্রি মিলিয়ে নেয়) ---------- */
-var FB_CONFIG={apiKey:"AIzaSyA3Vk-cNlKVxU0dRLOD2uPaybJcGYMVMU4",authDomain:"swdeshiagro-66253.firebaseapp.com",projectId:"swdeshiagro-66253",storageBucket:"swdeshiagro-66253.firebasestorage.app",messagingSenderId:"256418196585",appId:"1:256418196585:web:9f518a94e10c92e82986f8"};
-var FS=null,SYN="off",pushT,lastPushed=0,MYTS=0,EV=0,PUSHING=false,AGAIN=false,BKEY="khamar_base3",BASE="";
-try{BASE=localStorage.getItem(BKEY)||"";if(BASE)lastPushed=(JSON.parse(BASE)._ts||0)}catch(e){BASE=""}
-function synTxt(){return ({off:"☁️ সিঙ্ক বন্ধ (শুধু এই ফোনে)",wait:"⏳ সিঙ্ক হচ্ছে…",ok:"☁️ সিঙ্ক হয়েছে",err:"⚠️ সিঙ্ক হয়নি, ইন্টারনেট দেখুন"})[SYN]}
-function setSt(x){SYN=x;var e=document.getElementById("syn");if(e)e.innerHTML=synTxt()}
-function idx(a){var o={};(a||[]).forEach(function(x){o[String(x.id)]=x});return o}
-function same(a,b){return JSON.stringify(a)===JSON.stringify(b)}
-/* base = শেষবার সিঙ্ক হওয়া অবস্থা, loc = এই ফোন, rem = ক্লাউড। দুজনের যোগ/বদল/মোছা সব মিলিয়ে নেয় */
-function merge(baseStr,loc,rem){
- var b={};try{b=JSON.parse(baseStr||"{}")}catch(e){}
- var out=Object.assign({},loc,rem);
- COLS.forEach(function(k){var B=idx(b[k]),L=idx(loc[k]),R=idx(rem[k]),res=[],seen={};
-  function pick(i){var bi=B[i],li=L[i],ri=R[i];
-   if(li&&ri)return(bi&&same(li,bi))?ri:li;
-   if(li)return(bi&&same(li,bi))?null:li;
-   if(ri)return(bi&&same(ri,bi))?null:ri;
-   return null}
-  (rem[k]||[]).forEach(function(x){var i=String(x.id);seen[i]=1;var q=pick(i);if(q)res.push(q)});
-  (loc[k]||[]).forEach(function(x){var i=String(x.id);if(seen[i])return;seen[i]=1;var q=pick(i);if(q)res.push(q)});
-  out[k]=res});
- return out}
-function persist(){try{localStorage.setItem(KEY,JSON.stringify(db));localStorage.setItem(BKEY,BASE)}catch(e){}}
-function pushSoon(){if(!FS)return;setSt("wait");clearTimeout(pushT);pushT=setTimeout(push,1500)}
-function push(){
- if(!FS)return Promise.resolve();
- if(PUSHING){AGAIN=true;return Promise.resolve()}
- PUSHING=true;var before=JSON.stringify(db),ev0=EV,ref=FS.doc("farm/main"),out=null;
- return FS.runTransaction(function(tx){return tx.get(ref).then(function(sn){
-  var ts=Date.now(),m=JSON.parse(before);
-  if(sn.exists){var d=sn.data();if((d.ts||0)>lastPushed){var r=null;try{r=JSON.parse(d.json)}catch(e){}if(r)m=merge(BASE,m,r)}}
-  m._ts=ts;out=m;MYTS=ts;tx.set(ref,{json:JSON.stringify(m),ts:ts,by:ME||""})})
- }).then(function(){
-  var edited=EV!==ev0;
-  if(edited){var mm=merge(before,db,out);mm._ts=Math.max(db._ts||0,out._ts);db=mm;BASE=JSON.stringify(out)}
-  else{db=out;BASE=JSON.stringify(db)}
-  mig();lastPushed=out._ts;persist();PUSHING=false;
-  if(edited||AGAIN){AGAIN=false;pushSoon()}else setSt("ok");
-  softDraw()
- },function(){PUSHING=false;setSt("err");clearTimeout(pushT);pushT=setTimeout(function(){if(JSON.stringify(db)!==BASE)pushSoon()},20000)})}
-function applyRemote(d){var n=fresh();try{Object.assign(n,JSON.parse(d.json))}catch(e){return}
- db=n;db._ts=d.ts;lastPushed=d.ts;mig();BASE=JSON.stringify(db);persist();softDraw()}
-function startSync(){
- if(FS||!FB_CONFIG.apiKey||!window.firebase){if(!FS)setSt("off");return}
- try{firebase.initializeApp(FB_CONFIG);FS=firebase.firestore()}catch(e){setSt("err");return}
- setSt("wait");
- firebase.auth().signInAnonymously().then(function(){
-  var ref=FS.doc("farm/main");
-  return ref.get().then(function(sn){
-   if(!sn.exists)return push();
-   var d=sn.data(),r=d.ts||0;
-   if(BASE){
-    if(JSON.stringify(db)!==BASE)return push();
-    if(r>lastPushed)applyRemote(d)
-   }else{var l=db._ts||0;if(r>l)applyRemote(d);else if(l>r)return push();else{BASE=JSON.stringify(db);persist()}}
-   setSt("ok")
-  }).then(function(){
-   ref.onSnapshot(function(sn){if(!sn.exists||sn.metadata.hasPendingWrites)return;var d=sn.data(),r=d.ts||0;
-    if(r<=lastPushed||r===MYTS||PUSHING)return;
-    if(JSON.stringify(db)!==BASE)pushSoon();else{applyRemote(d);setSt("ok")}},function(){setSt("err")})
-  })
- }).catch(function(e){setSt("err");toast("সিঙ্ক চালু হয়নি: "+((e&&e.code)||e))})}
-window.addEventListener("online",function(){if(FS&&JSON.stringify(db)!==BASE)pushSoon()});
-function put(k,o){db[k].push(o);save();draw()}
-var tt;function toast(m){var e=document.getElementById("toast");if(!e){e=document.createElement("div");e.id="toast";document.body.appendChild(e)}e.textContent=m;e.style.display="block";clearTimeout(tt);tt=setTimeout(function(){e.style.display="none"},3500)}
-window.alert=function(m){toast(m)};
-var MD=null;
-function ask(t,f,cb,ok){MD={t:t,f:f||[],cb:cb,ok:ok||"ঠিক আছে"};dm()}
-function dm(){var m=document.getElementById("modal");if(!m){m=document.createElement("div");m.id="modal";document.body.appendChild(m)}
- if(!MD){m.innerHTML="";return}
- m.innerHTML="<div class='ov'><div class='sheet'><b>"+MD.t+"</b>"+MD.f.map(function(f,i){return f.type==="area"?"<label>"+f.l+"</label><textarea id='mf"+i+"'>"+esc(f.d||"")+"</textarea>":f.type==="date"?F(f.l,"mf"+i,"date",f.d||today(),""):f.type==="text"?F(f.l,"mf"+i,"text","","autocomplete=off"):f.type==="pass"?F(f.l,"mf"+i,"password","","inputmode=numeric autocomplete=off"):F(f.l,"mf"+i,"number",f.d,"min=0 step=any inputmode=decimal")}).join("")+"<div class='row'><button class='g' onclick='mx()'>বাতিল</button><button onclick='mok()'>"+MD.ok+"</button></div></div></div>";
- var e=document.getElementById("mf0");if(e&&e.tagName==="INPUT")e.focus()}
-function mx(){MD=null;dm()}
-function mok(){var m=MD,a=m.f.map(function(f,i){return document.getElementById("mf"+i).value});MD=null;dm();m.cb(a)}
-var PW="123456";
-function del(k,i){ask("মুছতে পাসওয়ার্ড দিন",[{l:"পাসওয়ার্ড",type:"pass"}],function(a){if(a[0]!==PW)return alert("পাসওয়ার্ড ভুল হয়েছে, কিছু মোছা হয়নি");db[k]=db[k].filter(function(x){return x.id!==i});save();draw();alert("মুছে গেছে")},"মুছুন")}
-function go(t){tab=t;panel=null;draw();window.scrollTo(0,0)}
-function F(l,i,t,d,x){return "<label>"+l+"</label><input id='"+i+"' type='"+t+"' value='"+(d==null?"":d)+"' "+(x||"")+">"}
-function S(l,i,o){return "<label>"+l+"</label><select id='"+i+"'>"+o.map(function(z){return "<option>"+z+"</option>"}).join("")+"</select>"}
-var NUM="min=0 inputmode=decimal",INT="min=0 inputmode=numeric";
+
+/* ---------- ডাটা: আগের khamar_v3 থাকলে সেখান থেকে, না থাকলে ডেমো ---------- */
+var D={
+ parents:[{t:"মুরগি",n:5,p:700},{t:"মুরগি",n:18,p:650},{t:"মুরগি",n:16,p:500},{t:"মোরগ",n:12,p:500}],
+ batches:[{id:"b1",name:"ব্যাচ ১",hatch:addD(today(),-7),alive:137,dead:0,cost:1960}],
+ chickDeath:[{d:addD(today(),-2),n:0}],
+ eggs7:[18,22,20,25,24,21,23],
+ eggsToday:23,
+ seedStock:0,
+ feedKg:42,feedDaily:3.2,feedPrice:52,
+ meds:[{d:today(),name:"ভ্যাক্সিন (ND)",type:"ভ্যাক্সিন",done:false},{d:addD(today(),2),name:"থায়ামিন + বিটা থিল",type:"ওষুধ",done:false},{d:addD(today(),4),name:"অ্যামোক্সিসিলিন",type:"ওষুধ",done:false}],
+ costs:[{c:"খাবার",a:350},{c:"ওষুধ",a:1830},{c:"সরঞ্জাম",a:180}],
+ assets:[["২০০ ওয়াট বালব (৪×৬০)",240],["১০০ ওয়াট বালব (৪×৩০)",120],["হোল্ডার (২×৫০)",100],["২ পিন (২×৫০)",100],["ব্রুডিং টিন",900],["অটো তাপমাত্রা ব্রুডার লাইট",800],["পানির পাত্র (৮×৩০)",240],["খাবার পাত্র (২×৫০)",100],["পানি ও খাবারের স্ট্যান্ড (৫×৩০)",150]],
+ loans:{give:0,get:4800,who:"সাগর"}
+};
+
+/* আগের ডাটা থেকে যা পাওয়া যায় সেটা বসানো */
+try{
+ var sv=JSON.parse(localStorage.getItem(KEY)||"null");
+ if(sv){
+  if(sv.flock&&sv.flock.length)D.parents=sv.flock.map(function(f){return{t:f.type,n:f.n,p:f.price}});
+  if(sv.inc&&sv.inc.length)D.batches=sv.inc.map(function(x,i){return{id:"b"+(i+1),name:x.name||("ব্যাচ "+(i+1)),hatch:x.start,alive:x.hatched||0,dead:0,cost:0}});
+  if(sv.med&&sv.med.length)D.meds=sv.med.filter(function(x){return !x.done}).map(function(x){return{d:x.date,name:x.name,type:x.type,done:false}});
+  if(sv.eggs&&sv.eggs.length){var t=today(),arr=[];for(var i=6;i>=0;i--){var dd=addD(t,-i);arr.push(sum(sv.eggs.filter(function(x){return x.date===dd}),function(x){return x.table}))}D.eggs7=arr;D.eggsToday=arr[6]}
+ }
+}catch(e){}
 
 /* ---------- হিসাব ---------- */
-function cd(x){var c={clear:0,rot:0,broken:0};(x.cands||[]).forEach(function(k){c.clear+=k.clear||0;c.rot+=k.rot||0;c.broken+=k.broken||0});return c}
-function mig(){db.inc.forEach(function(x){if(!x.cands){x.cands=x.cand?[x.cand]:[];delete x.cand}})}
-function live(x){var c=cd(x);return x.count-c.clear-c.rot-c.broken}
-function seedTotal(){return sum(db.eggs,function(x){return x.seed})}
-function seedStock(){return sum(db.eggs,function(x){return x.seed-(x.seedBad||0)})-sum(db.inc,function(x){return x.count})}
-function tableStock(){return sum(db.eggs,function(x){return x.table})+sum(db.inc,function(x){return cd(x).clear})-sum(db.esale,function(x){return x.n+(x.bad||0)})}
-function chickStock(){return sum(db.inc,function(x){return x.hatched||0})-sum(db.chk,function(x){return x.n})}
-function oldestSeed(){var r=seedStock();if(r<=0)return null;var a=db.eggs.slice().sort(function(x,y){return x.date<y.date?1:-1}),acc=0;for(var i=0;i<a.length;i++){acc+=a[i].seed-(a[i].seedBad||0);if(acc>=r)return a[i].date}return null}
-function setterUsed(){return sum(db.inc.filter(function(x){return x.hatched==null&&x.tr==null}),live)}
-function hatcherUsed(){return sum(db.inc.filter(function(x){return x.hatched==null&&x.tr!=null}),function(x){return x.tr})}
-function hatchRate(){var d=db.inc.filter(function(x){return x.hatched!=null&&x.count});return d.length?sum(d,function(x){return x.hatched})/sum(d,function(x){return x.count})*100:null}
-function seedPerDay(){var t=today();return sum(db.eggs.filter(function(x){return diff(t,x.date)>=0&&diff(t,x.date)<7}),function(x){return x.seed})/7}
-function feedLeft(){return sum(db.feed,function(x){return x.kind==="buy"||x.kind==="less"?x.kg:-x.kg})-autoUse()}
-function autoRules(){return (db.cfg||[]).filter(function(x){return x.type==="autofeed"}).sort(function(a,b){return a.from<b.from?-1:1})}
-function autoKg(){var kg=0,t=today();autoRules().forEach(function(r){if(r.from<=t)kg=r.kg});return kg}
-function todayFrac(){var h=new Date().getHours();return h>=17?1:h>=8?0.5:0}
-function autoUse(m){var R0=autoRules();if(!R0.length)return 0;var t=today(),tt=0;
- for(var d=R0[0].from;diff(t,d)>=0;d=addD(d,1)){if(m&&d.slice(0,7)!==m)continue;var kg=0;R0.forEach(function(r){if(r.from<=d)kg=r.kg});tt+=kg*(d===t?todayFrac():1)}return tt}
-function manualUse(m){function ok(x){return !m||x.date.slice(0,7)===m}return sum(db.feed.filter(function(x){return x.kind==="use"&&ok(x)}),function(x){return x.kg})-sum(db.feed.filter(function(x){return x.kind==="less"&&ok(x)}),function(x){return x.kg})}
-function seed2(){if((db.cfg||[]).some(function(x){return x.type==="flag"&&x.name==="m2"}))return;
- db.cfg=db.cfg||[];db.cfg.push({id:91000,type:"flag",name:"m2"},{id:91001,type:"autofeed",from:"2026-10-19",kg:3});
- if(!db.feed.some(function(x){return x.id===91002}))db.feed.push({id:91002,kind:"buy",kg:170,price:0,date:"2026-10-18",note:"রেগুলার খাবার তৈরি (নিজের বানানো)"});save()}
-function feedAvgPrice(){var b=db.feed.filter(function(x){return x.kind==="buy"&&x.price>0}),k=sum(b,function(x){return x.kg});return k?sum(b,function(x){return x.kg*x.price})/k:0}
-function feedPerDay(){var t=today(),w=db.feed.filter(function(x){return diff(t,x.date)>=0&&diff(t,x.date)<7});return autoKg()+(sum(w.filter(function(x){return x.kind==="use"}),function(x){return x.kg})-sum(w.filter(function(x){return x.kind==="less"}),function(x){return x.kg}))/7}
-function birds(t){return sum(db.flock.filter(function(g){return !t||g.type===t}),function(g){return g.n})}
-function ageNow(g){return g.age==null?null:g.age+Math.floor(diff(today(),g.asOf)/30.4)}
-function parentsVal(){return sum(db.flock,function(g){return g.n*g.price})}
-function parentsCost(){return sum(db.flock,function(g){return (g.n0||g.n)*g.price})}
-function equipVal(){return sum(db.led.filter(function(x){return x.type==="asset"}),function(x){return x.amt})}
-function avgEgg(){var s=db.esale.filter(function(x){return x.price>0}),n=sum(s,function(x){return x.n});return n?sum(s,function(x){return x.n*x.price})/n:0}
-function avgChick(){var s=db.chk.filter(function(x){return x.kind==="sell"&&x.price>0}),n=sum(s,function(x){return x.n});return n?sum(s,function(x){return x.n*x.price})/n:0}
-var EGGV=20;
-function assetParts(){var b=chickBuckets(),rc=rt("chick")||avgChick();return{"মুরগি":parentVal().v,"সরঞ্জাম":equipVal(),"খাবার":Math.max(0,feedLeft())*feedAvgPrice(),"ডিম":(Math.max(0,seedStock())+Math.max(0,tableStock()))*rt("egg",20),"বাচ্চা ও বাড়ন্ত":b.chick*rc+b.m1*rt("m1")+b.m2*rt("m2")+b.m3*rt("m3")}}
-function assets(){var p=assetParts();return Object.keys(p).reduce(function(t,k){return t+p[k]},0)}
-function seed3(){if((db.cfg||[]).some(function(x){return x.type==="flag"&&x.name==="m3"}))return;
- db.cfg=db.cfg||[];db.cfg.push({id:91010,type:"flag",name:"m3"});
- db.feed.forEach(function(x){if(x.id===91002&&!x.price)x.price=50});
- if(!db.led.some(function(x){return x.id===91011}))db.led.push({id:91011,date:"2026-10-01",type:"asset",grp:"",cat:"ইনকিউবেটর/ঘর/সরঞ্জাম",amt:21000,note:"ইনকিউবেটর (৬০০ ডিমের অটো)"});save()}
-function tot(o){return sum(Object.keys(o),function(k){return o[k]})}
-var OT=["কারেন্ট বিল","তুষের বিল","এক্সট্রা খরচ"],FD=["সবজি","সবজি (খাবার)","অন্য খাবার"];
-function fin(m){
- var i={},o={},od={},oo={},l={},ta=0,food=0,feedExp=0;function ok(d){return !m||d.slice(0,7)===m}function a(z,k,n){if(n)z[k]=(z[k]||0)+n}
- var ec=0,ev=0,cash=0;
- db.eggs.forEach(function(x){if(ok(x.date)&&!x.open){var q=(x.seed||0)+(x.table||0);ec+=q;ev+=q*rateAt("egg",x.date,20)}});
- if(ec)a(i,"ডিম উৎপাদন মূল্য ("+bn(ec)+"টি, গড় "+tk(ev/ec)+")",ev);
- db.esale.forEach(function(x){if(ok(x.date))cash+=x.n*(x.price||0)});
- var hb=db.inc.filter(function(x){return x.hatched!=null}),hh=sum(hb,function(x){return x.hatched}),ac=hh?sum(hb,function(x){return x.count*rateAt("egg",x.start,20)})/hh:0;
- db.chk.forEach(function(x){if(x.kind==="sell"&&ok(x.date))a(i,"বাচ্চা বিক্রি (ডিমের মূল্য বাদে)",x.n*((x.price||0)-ac))});
- var au=autoUse(m||null),mu=manualUse(m||null),fap=feedAvgPrice();
- if(au){var k1="রেগুলার খাবার — অটো ("+bn(au)+" কেজি)";a(o,k1,au*fap);a(od,k1,au*fap);food+=au*fap}
- if(mu){var k2="রেগুলার খাবার — নিজে এন্ট্রি ("+bn(mu)+" কেজি)";a(o,k2,mu*fap);a(od,k2,mu*fap);food+=mu*fap}
- feedExp=(au+mu)*fap;
- db.med.forEach(function(x){if(x.done&&ok(x.date)){var c=+x.cost||0;a(o,"ওষুধ/ভিটামিন",c);a(od,"ওষুধ/ভিটামিন",c)}});
- db.led.forEach(function(x){if(!ok(x.date))return;
-  if(x.type==="in"){a(i,x.cat,x.amt);if(x.cost)a(l,"বিক্রিত মুরগির ক্রয়মূল্য",x.cost)}
-  else if(x.type==="out"){var g=x.grp||(OT.indexOf(x.cat)>=0?"o":"d");a(o,x.cat,x.amt);a(g==="o"?oo:od,x.cat,x.amt);if(FD.indexOf(x.cat)>=0)food+=x.amt}
-  else if(x.type==="loss")a(l,x.cat,x.amt);else if(x.type==="asset")ta+=x.amt});
- var r={i:i,o:o,od:od,oo:oo,l:l,ta:ta,food:food,feedExp:feedExp,cash:cash};r.ti=tot(i);r.to=tot(o);r.tl=tot(l);r.net=r.ti-r.to-r.tl;return r;
-}
-function invest(){var f=fin(null),fp=sum(db.feed.filter(function(x){return x.kind==="buy"}),function(x){return x.kg*(x.price||0)});return parentsCost()+equipVal()+(f.to-f.feedExp)+fp}
+function parentVal(){return sum(D.parents,function(x){return x.n*x.p})}
+function birds(){return sum(D.parents,function(x){return x.n})}
+function meatBirds(){return sum(D.batches,function(x){return x.alive})}
+function assetTotal(){return sum(D.assets,function(x){return x[1]})}
+function costTotal(){return sum(D.costs,function(x){return x.a})}
+function estSalePerBird(age){return age>=60?650:(age>=30?400:180)}
+function feedLeft(){return D.feedKg}
+function daysLeft(){return D.feedDaily?Math.floor(feedLeft()/D.feedDaily):0}
+function eggTotal7(){return sum(D.eggs7,function(x){return x})}
+function layRate(){return birds()?Math.round(D.eggsToday/birds()*100):0}
 
-/* ---------- হোম ---------- */
-function todayEggs(){var t=today(),a=db.eggs.filter(function(x){return x.date===t});return{s:sum(a,function(x){return x.seed}),t:sum(a,function(x){return x.table})}}
+/* ---------- ড্যাশবোর্ড ---------- */
 function home(){
- var t=today(),all=fin(null),mo=fin(t.slice(0,7)),net=all.net,al=[];
- db.inc.forEach(function(x){if(x.hatched!=null)return;var d=diff(t,x.start),nm=esc(x.name||"ব্যাচ");
-  if(d===0)al.push("🌡️ "+nm+": নতুন ব্যাচ, তাপমাত্রা "+bn(TEMP)+"° ও আর্দ্রতা "+bn(H1)+"% সেট করুন");
-  if(x.tr==null&&d===TDAY-1)al.push("⏰ "+nm+": আগামীকাল ১৮তম দিন, ডিম হ্যাচিং ট্রেতে উঠাবেন ও আর্দ্রতা "+bn(H2)+"% করবেন (তাপমাত্রা "+bn(TEMP)+"° ই)");
-  if(x.tr==null&&d>=TDAY)al.push("🐣 "+nm+": ১৮ দিন পূর্ণ! এখনই ডিম হ্যাচিং ট্রেতে উঠান ও আর্দ্রতা "+bn(H2)+"% করুন");
-  if(x.tr==null&&!(x.cands&&x.cands.length)&&d>=CAND&&d<TDAY)al.push("🔦 "+nm+": ক্যান্ডলিং করুন (বাওয়া, নষ্ট ও ভাঙা ডিম গুনুন)");
-  if(x.tr!=null&&d>=x.days&&d<TDAY+HPH)al.push("🐥 "+nm+": বাচ্চা ফোটার সময়, আর্দ্রতা "+bn(H2)+"% থাকবে");
-  if(x.tr!=null&&d===TDAY+HPH-1)al.push("⏰ "+nm+": আগামীকাল বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করতে হবে");
-  if(x.tr!=null&&d>=TDAY+HPH)al.push("💧 "+nm+": বাচ্চা বের করুন, আর্দ্রতা আবার "+bn(H1)+"% করুন, কয়টি ফুটল লিখুন");
-  if(x.tr!=null&&d===x.days-1)al.push("⏰ "+nm+": আগামীকাল বাচ্চা ফোটার দিন")});
- var o=oldestSeed();if(o&&diff(t,o)>7)al.push("🥚 বীজ ডিম "+bn(diff(t,o))+" দিনের পুরোনো, দ্রুত ইনকিউবেটরে দিন (৭ দিনের মধ্যে সবচেয়ে ভালো)");
- var lastS=db.inc.length?db.inc.map(function(x){return x.start}).sort().pop():null;
- if(lastS){var dd15=diff(t,lastS);if(dd15>=15)al.push({t:"🥚 বীজ ডিম ইনকিউবেটরে বসানোর সময় (শেষ ব্যাচ "+fmt(lastS)+" থেকে "+bn(dd15)+" দিন, বীজ ডিম মজুদ "+bn(Math.max(0,seedStock()))+"টি)",act:{goinc:1}});else if(dd15===14)al.push("⏰ আগামীকাল ১৫ দিন পূর্ণ, বীজ ডিম ইনকিউবেটরে বসাতে হবে (বীজ ডিম মজুদ "+bn(Math.max(0,seedStock()))+"টি)")}
- db.med.filter(function(x){return !x.done&&diff(x.date,t)<=0}).forEach(function(x){al.push({t:"💊 "+x.type+": "+esc(x.name)+(diff(x.date,t)<0?" ("+bn(-diff(x.date,t))+" দিন দেরি)":" — আজ দিন"),act:{med:x.id}})});
- careBatches().forEach(function(o){careToday(o.x).forEach(function(c){al.push({t:c.ic+" ব্যাচ "+bn(o.n)+" (দিন "+bn(o.dn)+"): "+c.h,act:{care:o.x.id,k:c.k,vac:c.vac?1:0}})})});
- if(db.wt.length){var lw=db.wt.map(function(x){return x.date}).sort().pop();if(diff(t,lw)>=7)al.push("⚖️ ওজন মাপার সময় হয়েছে (শেষ মাপ "+bn(diff(t,lw))+" দিন আগে)")}
- var fpd=feedPerDay(),dl=fpd?feedLeft()/fpd:null;
- if(db.feed.length&&(feedLeft()<=0||(dl!==null&&dl<=3)))al.push("🌾 খাবার প্রায় শেষ, কিনতে হবে");
- var last=db.inc.length?db.inc.map(function(x){return x.start}).sort().pop():null,nx=last?addD(last,15):t,hr=hatchRate();
- function C(c,b,s){return "<div class='"+c+"'><b>"+b+"</b><span>"+s+"</span></div>"}
- return "<div class='row3'><button onclick='go(\"eggs\")'>🥚 ডিম এন্ট্রি</button><button onclick='go(\"feed\")'>🌾 খাবার</button><button onclick='go(\"money\")'>💰 খরচ</button></div><button class='o' style='margin-top:8px' onclick='go(\"meds\")'>💊 ওষুধ ও ভ্যাক্সিন"+(medDue()?" · আজ "+bn(medDue())+"টি করণীয়":"")+"</button>"+
- "<h2>আজ করণীয়</h2>"+alertsBox(al)+
- "<h2>চলমান ব্যাচ ও করণীয়</h2>"+runningBatches()+careBox()+tipsBox()+"<h2>ডিম ও বাচ্চা</h2><div class='sum'>"+
- C("y w",bn(todayEggs().s+todayEggs().t)+"টি","আজকের ডিম সংগ্রহ<br>বীজ ডিম "+bn(todayEggs().s)+" + খাওয়ার ডিম "+bn(todayEggs().t))+C("y",bn(seedStock()),"বীজ ডিম মজুদ<br>মোট সংগ্রহ "+bn(seedTotal()))+
- C("y",bn(tableStock()),"খাওয়ার ডিম (বিক্রির জন্য)")+
- C("",bn(chickStock()),"বাচ্চা মজুদ")+
- C("",bn(Math.max(0,tableStock())+Math.max(0,chickStock())),"বিক্রি যোগ্য মোট<br>ডিম "+bn(Math.max(0,tableStock()))+" + বাচ্চা "+bn(Math.max(0,chickStock())))+"</div>"+
- "<h2>মুরগি প্যারেন্টস</h2><div class='sum'>"+
- C("",bn(birds()),"মোট প্যারেন্টস<br>মুরগি "+bn(birds("মুরগি"))+" · মোরগ "+bn(birds("মোরগ")))+
- C("",tk(parentsVal()),"প্যারেন্টসের মূল্য")+C("w",pwAvg()==null?"—":wkg(pwAvg()),"প্যারেন্টদের গড় ওজন (সর্বশেষ মাপ)")+C("w",totalW()==null?"—":kgg(totalW()+growW()),"মোট মুরগির ওজন<br>"+(totalW()==null?"ওজন ট্যাবে ওজন লিখুন":"প্যারেন্ট "+kgg(totalW())+(growW()?" · বাড়ন্ত "+kgg(growW()):"")))+"</div>"+marketBox()+
- "<h2>আর্থিক অবস্থা</h2><div class='sum'>"+
- C("",tk(invest()),"মোট ইনভেস্ট")+C("y",tk(assets()),"মোট এসেট<br>"+Object.keys(assetParts()).map(function(k){return k+" "+tk(assetParts()[k])}).join(" · "))+
- C(net>=0?"":"r",tk(Math.abs(net)),(net>=0?"মোট লাভ":"মোট লস")+"<br>এই মাসে "+(mo.net>=0?"লাভ ":"লস ")+tk(Math.abs(mo.net)))+
- C("",bn(feedLeft())+" কেজি","খাবার বাকি"+(dl!==null&&feedLeft()>0?"<br>প্রায় "+bn(Math.floor(dl))+" দিন চলবে":""))+C("",tk(feedCost().used),"খাবারের খরচ (ব্যবহার হয়েছে)<br>"+bn(feedCost().kg)+" কেজি × "+tk(feedCost().ap))+C("y",tk(feedCost().stock),"অবশিষ্ট খাবারের মূল্য<br>"+bn(Math.max(0,feedLeft()))+" কেজি × "+tk(feedCost().ap))+"</div>"+
- "<h2>মাসে ২ ব্যাচের পরিকল্পনা</h2><div class='box'>"+
- "<div class='it'><span>পরের ব্যাচ বসানোর তারিখ</span><b>"+fmt(nx)+"</b></div>"+
- "<div class='it'><span>২০০ ডিমের জন্য দৈনিক বীজ ডিম লাগবে</span><b>"+bn(200/15)+"টি</b></div>"+
- "<div class='it'><span>গত ৭ দিনে গড়ে বীজ ডিম পাচ্ছেন</span><b class='"+(seedPerDay()>=200/15?"ok":"bad")+"'>"+bn(seedPerDay())+"টি</b></div>"+
- "<div class='it'><span>২০০ ডিমে আনুমানিক বাচ্চা ("+(hr==null?"৭৫% ধরে":"আপনার গড় "+bn(hr)+"%")+")</span><b>"+bn(Math.round(200*(hr==null?75:hr)/100))+"টি</b></div></div>"+
- bkBox();
+ var t=today(),al="";
+ var due=D.meds.filter(function(m){return diff(m.d,t)<=0&&!m.done});
+ due.forEach(function(m){al+="<div class='alert "+(diff(m.d,t)<0?"r":"")+"'><i>💊</i><div><b>"+m.name+"</b><small>"+(diff(m.d,t)<0?bn(-diff(m.d,t))+" দিন দেরি":"আজ দিতে হবে")+"</small></div></div>"});
+ if(daysLeft()<=5)al+="<div class='alert'><i>🌾</i><div><b>খাবার প্রায় শেষ</b><small>প্রায় "+bn(daysLeft())+" দিন চলবে, কিনে রাখুন</small></div></div>";
+ D.batches.forEach(function(b){var age=diff(t,b.hatch);if(age>=60&&age<=70)al+="<div class='alert'><i>🍗</i><div><b>"+b.name+": বিক্রির সময় কাছে</b><small>বয়স "+bn(age)+" দিন</small></div></div>"});
+ return ""+
+ "<h2>আজকের অবস্থা <small>"+fmt(t)+"</small></h2>"+
+ "<div class='grid'>"+
+  kpi("hi",bn(D.eggsToday)+"টি","আজকের ডিম")+
+  kpi("",bn(meatBirds())+"টি","মাংসের মুরগি (মজুদ)")+
+  kpi("",bn(birds())+"টি","প্যারেন্ট (মুরগি/মোরগ)")+
+  kpi(daysLeft()<=5?"warn":"",bn(feedLeft())+" কেজি","খাবার বাকি · "+bn(daysLeft())+" দিন")+
+ "</div>"+
+ "<h2>করণীয় ও সাজেশন</h2>"+(al||"<div class='empty'>আজ জরুরি কিছু নেই ✓</div>")+
+ "<h2>গত ৭ দিনের ডিম <small>মোট "+bn(eggTotal7())+"টি</small></h2>"+eggChart()+
+ "<h2>আর্থিক সার</h2><div class='grid'>"+
+  kpi("",tk(parentVal()),"প্যারেন্টসের মূল্য")+
+  kpi("",tk(assetTotal()),"মোট এসেট")+
+  kpi("",tk(costTotal()),"মোট খরচ")+
+  kpi("hi",tk(D.loans.get),"পাওনা ধার ("+D.loans.who+")")+
+ "</div>";
 }
-function bk(){var j=JSON.stringify(db);function show(){ask("ব্যাকআপের লেখা কপি করে Notes বা WhatsApp-এ রাখুন",[{l:"ব্যাকআপ লেখা",type:"area",d:j}],function(){},"ঠিক আছে")}
- try{navigator.clipboard.writeText(j).then(function(){alert("কপি হয়েছে। Notes বা WhatsApp-এ পেস্ট করে রাখুন।")},show)}catch(e){show()}}
+function kpi(c,v,l){return "<div class='kpi "+c+"'><span>"+l+"</span><b>"+v+"</b></div>"}
+function eggChart(){
+ var mx=Math.max.apply(null,D.eggs7.concat([1])),days=["আজ"];
+ var h="<div class='card'><div class='chart'>";
+ D.eggs7.forEach(function(v,i){h+="<div class='"+(i===6?"t":"")+"'><i style='height:"+Math.max(6,v/mx*100)+"%'></i>"+bn(v)+"</div>"});
+ return h+"</div><div class='note'>ডিম ডিম উৎপাদনের ডাটা। হার: "+bn(layRate())+"% (প্যারেন্টস অনুযায়ী)</div></div>";
+}
 
+/* ---------- মাংসের মুরগি ---------- */
+function meat(){
+ var t=today(),h="<h2>মাংসের মুরগি <small>বাচ্চা থেকে ২–৬ মাস</small></h2>";
+ D.batches.forEach(function(b){
+  var age=diff(t,b.hatch),pct=Math.min(100,age/180*100),sale=estSalePerBird(age),val=b.alive*sale;
+  h+="<div class='card'><div class='row'><div><b>"+b.name+"</b><small>বয়স "+bn(age)+" দিন · "+fmt(b.hatch)+" এ ফোটা</small></div><span class='pill "+(age>=60?"y":"b")+"'>"+(age>=60?"বিক্রির সময়":"বড় হচ্ছে")+"</span></div>"+
+   "<div class='bar'><i style='width:"+pct+"%'></i></div><small class='note'>বাচ্চা → ২ মাস → ৫/৬ মাস</small>"+
+   "<div class='row'><div>জীবিত<small>মৃত: "+bn(b.dead)+"</small></div><b>"+bn(b.alive)+"টি</b></div>"+
+   "<div class='row'><div>আনুমানিক বিক্রি মূল্য<small>প্রতি মুরগি ~"+tk(sale)+"</small></div><b>"+tk(val)+"</b></div></div>";
+ });
+ return h;
+}
+
+/* ---------- বাচ্চা ---------- */
+function chick(){
+ var h="<h2>বাচ্চা হিসাব <small>খরচ + মৃত্যু</small></h2>";
+ D.batches.forEach(function(b){
+  var cpb=b.alive?b.cost/b.alive:0;
+  h+="<div class='card'><div class='row'><b>"+b.name+"</b><span class='pill'>"+bn(b.alive)+" জীবিত</span></div>"+
+   "<div class='row'><div>মোট বাচ্চা খরচ<small>খাবার, ওষুধ, ভ্যাক্সিন, সরঞ্জাম</small></div><b>"+tk(b.cost)+"</b></div>"+
+   "<div class='row'><div>প্রতি বাচ্চা খরচ</div><b>"+tk(cpb)+"</b></div>"+
+   "<div class='row'><div>মৃত্যু</div><span class='pill r'>"+bn(b.dead)+"টি</span></div></div>";
+ });
+ return h+"<div class='btns'><button>+ খরচ</button><button>+ মৃত্যু</button><button class='o'>+ ব্যাচ</button></div>";
+}
 
 /* ---------- ডিম ---------- */
-function eggs(){
- var o=oldestSeed(),age=o?diff(today(),o):null;
- var r="<h1>🥚 ডিমের হিসাব</h1><div class='sum'><div class='y'><b>"+bn(seedStock())+"</b><span>বীজ ডিম মজুদ"+(age!=null?"<br>সবচেয়ে পুরোনোটি "+bn(age)+" দিনের":"")+"</span></div><div><b>"+bn(tableStock())+"</b><span>খাওয়ার ডিম মজুদ<br>(ক্যান্ডলিংয়ের বাওয়া সহ)</span></div></div>";
- if(age>7)r+="<div class='box warn bad'>বীজ ডিম ৭ দিনের বেশি পুরোনো হয়ে গেছে। দ্রুত ইনকিউবেটরে দিন।</div>";
- r+="<h2>ডিম সংগ্রহ</h2><div class='box'>"+F("তারিখ (আগের দিনও চলবে)","d","date",today())+
- "<div class='row'><div>"+F("বীজ ডিম (রাখলাম)","s","number","",INT)+"</div><div>"+F("খাওয়ার ডিম","t","number","",INT)+"</div></div>"+F("ভাঙা / বাদ পড়া বীজ ডিম","sb","number","",INT)+"<button onclick='addEgg()'>সংরক্ষণ করুন</button></div>"+
- "<h2>ডিম বিক্রি</h2><div class='box'>"+F("তারিখ","sd","date",today())+
- "<div class='row'><div>"+F("কয়টি বিক্রি","sn","number","",INT)+"</div><div>"+F("প্রতিটির দাম (৳)","sp","number","",NUM)+"</div></div>"+F("নষ্ট / ঘরে খরচ","sx","number","",INT)+"<button class='o' onclick='addSale()'>বিক্রি সংরক্ষণ করুন</button></div>"+
- "<h2>নিজে খাওয়া / নষ্ট / ঘরে খরচ</h2><div class='box'>"+S("কোন মজুদ থেকে","ou",["খাওয়ার ডিম","বীজ ডিম"])+S("কারণ","orr",["নিজে খেয়েছি","নষ্ট","ভেঙে গেছে","উপহার/অন্য"])+"<div class='row'><div>"+F("কয়টি","oc","number","",INT)+"</div><div>"+F("তারিখ","od","date",today())+"</div></div><button class='o' onclick='addOwn()'>সংরক্ষণ করুন</button><small>এগুলো মজুদ থেকে কমে যাবে, বিক্রির আয়ে যোগ হবে না। এ পর্যন্ত মোট: "+bn(ownEggs())+"টি</small></div>"+
- "<h2>সংগ্রহের তালিকা</h2><div class='box'>";
- var a=db.eggs.slice().sort(function(x,y){return x.date<y.date?1:-1});
- if(!a.length)r+="<div class='empty'>এখনো কোনো হিসাব নেই</div>";
- a.forEach(function(x){r+="<div class='it'><div>"+fmt(x.date)+"<small>"+(x.seed||x.table||!x.seedBad?"বীজ ডিম "+bn(x.seed)+" · খাওয়ার ডিম "+bn(x.table):"বীজ ডিম থেকে")+(x.seedBad?" · বাদ/খরচ "+bn(x.seedBad)+(x.note?" ("+esc(x.note)+")":""):"")+"</small></div><div class='act'><button class='s' onclick='del(\"eggs\","+x.id+")'>মুছুন</button></div></div>"});
- r+="</div><h2>বিক্রির তালিকা</h2><div class='box'>";
- var b=db.esale.slice().sort(function(x,y){return x.date<y.date?1:-1});
- if(!b.length)r+="<div class='empty'>এখনো বিক্রি নেই</div>";
- b.forEach(function(x){r+="<div class='it'><div>"+fmt(x.date)+"<small>"+(x.n?bn(x.n)+"টি × "+bn(x.price)+" = "+tk(x.n*x.price):"ঘরে খরচ/নষ্ট")+(x.bad?" · "+(x.n?"নষ্ট/খরচ ":"")+bn(x.bad)+"টি"+(x.note?" ("+esc(x.note)+")":""):"")+"</small></div><div class='act'><button class='s' onclick='del(\"esale\","+x.id+")'>মুছুন</button></div></div>"});
- return r+"</div>";
+function egg(){
+ return "<h2>ডিম উৎপাদন <small>বিশ্লেষণ</small></h2>"+eggChart()+
+ "<div class='card'><div class='row'><div>আজকের ডিম<small>গত ৭ দিনের গড় "+bn(Math.round(eggTotal7()/7))+"টি</small></div><b>"+bn(D.eggsToday)+"টি</b></div>"+
+ "<div class='row'><div>ডিম পাড়ার হার<small>প্যারেন্টস অনুযায়ী</small></div><b>"+bn(layRate())+"%</b></div>"+
+ "<div class='row'><div>বীজ ডিম মজুদ</div><b>"+bn(D.seedStock)+"টি</b></div></div>"+
+ "<div class='btns'><button>+ ডিম</button><button>+ বিক্রি</button><button class='o'>+ নষ্ট</button></div>";
 }
-function addEgg(){if(!v("d"))return alert("তারিখ দিন");put("eggs",{id:id(),date:v("d"),seed:+v("s")||0,table:+v("t")||0,seedBad:+v("sb")||0})}
-function addSale(){var n=+v("sn");if(!n||!v("sd"))return alert("সংখ্যা ও তারিখ দিন");var o={id:id(),date:v("sd"),n:n,price:+v("sp")||0,bad:+v("sx")||0};if(n>tableStock())ask("মজুদের চেয়ে বেশি বিক্রি দেখাচ্ছে। তবুও সংরক্ষণ করবেন?",[],function(){put("esale",o)},"সংরক্ষণ করুন");else put("esale",o)}
-
-/* ---------- ইনকিউবেটর ---------- */
-function stp(ic,t,d){return "<div class='it'><div>"+ic+" <b>"+t+"</b><small>"+d+"</small></div></div>"}
-function nextTodo(x){var d=diff(today(),x.start),dC=addD(x.start,CAND),dT=addD(x.start,TDAY),dH=addD(x.start,x.days),dO=addD(x.start,TDAY+HPH);
- if(x.hatched!=null)return "";
- if(!(x.cands&&x.cands.length)&&d<TDAY)return d>=CAND?"এখন করণীয়: ক্যান্ডলিং করে বাওয়া, নষ্ট ও ভাঙা ডিম বের করুন":"পরের করণীয়: "+fmt(dC)+" তারিখে ক্যান্ডলিং ("+bn(CAND-d)+" দিন পর)";
- if(x.tr==null)return d>=TDAY?"এখন করণীয়: ডিম হ্যাচিং ট্রেতে উঠান, ডিম ঘোরানো বন্ধ করুন, আর্দ্রতা "+bn(H1)+" থেকে "+bn(H2)+"% করুন (তাপমাত্রা "+bn(TEMP)+"° ই থাকবে)":"পরের করণীয়: "+fmt(dT)+" তারিখে ডিম হ্যাচিং ট্রেতে উঠানো ও আর্দ্রতা "+bn(H2)+"% করা ("+bn(TDAY-d)+" দিন পর)";
- if(d>=TDAY+HPH)return "এখন করণীয়: বাচ্চা বের করুন, আর্দ্রতা আবার "+bn(H1)+"% করুন, কয়টি ফুটল লিখুন";
- if(d>=x.days)return "এখন করণীয়: বাচ্চা ফুটছে, আর্দ্রতা "+bn(H2)+"% থাকবে। "+fmt(dO)+" তারিখে বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করুন";
- return "পরের করণীয়: "+fmt(dH)+" থেকে বাচ্চা ফোটা শুরু ("+bn(x.days-d)+" দিন পর)। "+fmt(dO)+" তারিখে বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করুন"}
-function envNow(x){if(x.hatched!=null)return "";var d=diff(today(),x.start);
- if(d<TDAY)return "🌡️ "+bn(TEMP)+"° · 💧 আর্দ্রতা "+bn(H1)+"% ("+fmt(addD(x.start,TDAY))+" পর্যন্ত)";
- if(d<TDAY+HPH)return "🌡️ "+bn(TEMP)+"° · 💧 আর্দ্রতা "+bn(H2)+"% ("+fmt(addD(x.start,TDAY+HPH))+" পর্যন্ত)";
- return "💧 বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করুন"}
-function batchCard(x){
- var t=today(),d=diff(t,x.start),c=cd(x),lv=live(x),dC=addD(x.start,CAND),dT=addD(x.start,TDAY),dH=addD(x.start,x.days),h="",b="",todo=nextTodo(x);
- h+=stp("✅","ডিম বসানো",fmt(x.start)+" · "+bn(x.count)+"টি ডিম<br>🌡️ "+bn(TEMP)+"° · 💧 আর্দ্রতা "+bn(H1)+"% (প্রথম "+bn(TDAY)+" দিন)");
- (x.cands||[]).forEach(function(k,j){h+=stp("✅","ক্যান্ডলিং "+bn(j+1)+(k.date?" · "+fmt(k.date):""),"বাওয়া "+bn(k.clear)+" · পচা/নষ্ট "+bn(k.rot)+" · ভাঙা "+bn(k.broken)+(k.sid?" · বাওয়া ডিম বিক্রি হয়েছে":"")+" <button class='s' onclick='delCand("+x.id+","+j+")'>মুছুন</button>")});
- if(x.cands&&x.cands.length)h+="<div class='it'><div>🥚 ইনকিউবেটরে এখন ভালো ডিম <b>"+bn(lv)+"টি</b><small>মোট বাদ: বাওয়া "+bn(c.clear)+" · পচা/নষ্ট "+bn(c.rot)+" · ভাঙা "+bn(c.broken)+"</small></div></div>";
- else h+=stp(d>=CAND?"⚠️":"⏳","ক্যান্ডলিং (৫–৬ দিনে)",d>=CAND?"<span class='bad'>এখনই করুন</span> · "+fmt(dC)+" থেকে":fmt(dC)+" · "+bn(CAND-d)+" দিন পর");
- if(x.tr!=null)h+=stp("✅","হ্যাচিং ট্রেতে উঠানো",bn(x.tr)+"টি"+(lv>x.tr?" · ১৮ দিনে নষ্ট "+bn(lv-x.tr):"")+"<br>🌡️ "+bn(TEMP)+"° · 💧 আর্দ্রতা "+bn(H2)+"% (পরের "+bn(HPH)+" দিন)");
- else h+=stp(d>=TDAY?"⚠️":"⏳","হ্যাচিং ট্রেতে উঠান (১৮তম দিন)",fmt(dT)+(d>=TDAY?" · <span class='bad'>আজই উঠান</span>":" · "+bn(TDAY-d)+" দিন পর")+"<br>তখন আর্দ্রতা "+bn(H2)+"% করুন (তাপমাত্রা "+bn(TEMP)+"°)");
- if(x.hatched!=null)h+=stp("✅","বাচ্চা ফুটেছে",bn(x.hatched)+"টি · হ্যাচ রেট "+bn(x.hatched/x.count*100)+"% · বাচ্চার হিসাব “বাচ্চা” ট্যাবে");
- else h+=stp(x.tr!=null&&d>=x.days?"⚠️":"⏳","বাচ্চা ফোটা (২১–২২ দিন)",fmt(dH)+(d<x.days?" · "+bn(x.days-d)+" দিন পর":" · <span class='bad'>এখন</span>")+" · হ্যাচিং ট্রেতে "+bn(HPH)+" দিন<br>"+fmt(addD(x.start,TDAY+HPH))+" তারিখে বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করুন");
- if(x.hatched==null){
-  b+="<button class='s p' onclick='panel={t:\"cand\",id:"+x.id+"};draw();window.scrollTo(0,0)'>"+((x.cands&&x.cands.length)?"আবার ক্যান্ডলিং":"ক্যান্ডলিং লিখুন")+"</button>";
-  if(x.tr==null)b+="<button class='s p' onclick='trf("+x.id+")'>ট্রেতে উঠালাম</button>";else b+="<button class='s p' onclick='hat("+x.id+")'>কয়টি ফুটল?</button>";
- }
- if(x.hatched!=null)b+="<button class='s p' onclick='moreHatch("+x.id+")'>আরও বাচ্চা বের করলাম</button>";
- b+="<button class='s' onclick='del(\"inc\","+x.id+")'>মুছুন</button>";
- return "<div class='box'><div class='it' style='border:0;padding-top:0'><b style='font-size:17px'>"+esc(x.name||"ব্যাচ")+" · "+bn(x.count)+"টি</b>"+(x.hatched==null?"<span>"+bn(Math.max(0,d))+" / "+bn(x.days)+" দিন</span>":"")+"</div>"+
- (x.hatched==null?"<div class='bar'><i style='width:"+Math.min(100,Math.max(0,d)/x.days*100)+"%'></i></div><div class='it' style='background:var(--inp);border-radius:8px;padding:8px;border:0;margin-bottom:4px'><b class='"+(todo.indexOf("এখন")===0?"bad":"ok")+"'>👉 "+todo+"</b><br><b>"+envNow(x)+"</b></div>":"")+h+"<div style='text-align:right;margin-top:6px'>"+b+"</div></div>";
-}
-function inc(){
- var su=setterUsed(),hu=hatcherUsed(),r,
- act=db.inc.filter(function(x){return x.hatched==null}).sort(function(x,y){return x.start<y.start?-1:1}),
- dn=db.inc.filter(function(x){return x.hatched!=null}).sort(function(x,y){return x.start<y.start?1:-1});
- r="<h1>🔌 ইনকিউবেটর (৬০০)</h1><div class='sum'><div class='y'><b>"+bn(su)+"</b><span>সেটারে এখন ডিম<br>"+bn(SETTER)+" এর মধ্যে</span></div><div><b>"+bn(hu)+"</b><span>হ্যাচিং ট্রেতে<br>"+bn(HATCHER)+" এর মধ্যে</span></div>"+
- "<div><b>"+bn(sum(db.inc,function(x){return cd(x).clear}))+"</b><span>ক্যান্ডলিংয়ে বাওয়া<br>(খাওয়ার ডিম হয়েছে)</span></div><div class='r'><b>"+bn(sum(db.inc,function(x){return cd(x).rot+cd(x).broken}))+"</b><span>নষ্ট ও ভাঙা ডিম</span></div></div>";
- if(panel&&panel.t==="cand"){var b0=db.inc.filter(function(z){return z.id===panel.id})[0];
-  r+="<div class='box' style='border:2px solid var(--yolk)'><b>🔦 ক্যান্ডলিং ফল: "+esc(b0.name||"ব্যাচ")+"</b><br><small>এখন ইনকিউবেটরে ভালো ডিম আছে "+bn(live(b0))+"টি। ক্যান্ডলিংয়ে যতগুলো বের করলেন, শুধু সেগুলোর সংখ্যা লিখুন।</small>"+F("ক্যান্ডলিংয়ের তারিখ","cdt","date",today())+
-  "<div class='row'><div>"+F("বাওয়া ডিম (বের করলাম)","cc","number","0",INT)+"</div><div>"+F("পচা / নষ্ট","cr","number","0",INT)+"</div></div>"+F("ভেঙে গেছে","cb","number","0",INT)+
-  F("বাওয়া ডিম বিক্রি করে থাকলে প্রতিটির দাম (৳)","cp","number","",NUM)+"<small>দাম দিলে বিক্রির হিসাব নিজে ডিম বিক্রি ও আয়ে যোগ হবে।</small>"+
-  "<button onclick='saveCand()'>সংরক্ষণ করুন</button><button class='g' onclick='panel=null;draw()'>বাতিল</button></div>"}
- r+="<div class='box'><small>সেটার "+bn(su)+" / "+bn(SETTER)+"</small><div class='bar'><i style='width:"+Math.min(100,su/SETTER*100)+"%'></i></div><small>হ্যাচিং ট্রে "+bn(hu)+" / "+bn(HATCHER)+"</small><div class='bar'><i style='width:"+Math.min(100,hu/HATCHER*100)+"%'></i></div></div>";
- r+="<h2>চলমান ব্যাচ</h2>"+(act.length?act.map(batchCard).join(""):"<div class='box'><div class='empty'>চলমান ব্যাচ নেই</div></div>");
- r+="<h2>নতুন ব্যাচ বসান</h2><div class='box'><small>বীজ ডিম মজুদ আছে "+bn(seedStock())+"টি</small>"+F("ব্যাচের নাম","n","text","","placeholder='যেমন: নভেম্বর-২'")+
- "<div class='row'><div>"+F("কয়টি ডিম দিলাম","c","number","200","min=1 inputmode=numeric")+"</div><div>"+F("কত দিনে ফুটবে","k","number","21","min=1 inputmode=numeric")+"</div></div>"+
- F("ডিম বসানোর তারিখ (চলমান ব্যাচও দেওয়া যাবে)","d","date",today())+"<button onclick='addInc()'>ব্যাচ শুরু করুন</button><small>১৮ দিন সেটারে, তারপর ৩–৪ দিন হ্যাচিং ট্রেতে।</small></div>";
- if(dn.length)r+="<h2>শেষ হওয়া ব্যাচ</h2>"+dn.map(batchCard).join("");
- return r;
-}
-function chicks(){
- var sold=sum(db.chk.filter(function(x){return x.kind==="sell"}),function(x){return x.n}),dead=sum(db.chk.filter(function(x){return x.kind==="die"}),function(x){return x.n}),inc0=sum(db.chk.filter(function(x){return x.kind==="sell"}),function(x){return x.n*x.price}),
- r="<h1>🐥 বাচ্চা</h1><div class='sum'><div class='y'><b>"+bn(chickStock())+"</b><span>বাচ্চা মজুদ</span></div><div><b>"+bn(sum(db.inc,function(x){return x.hatched||0}))+"</b><span>মোট ফুটেছে</span></div><div><b>"+bn(sold)+"</b><span>বিক্রি · "+tk(inc0)+"</span></div><div class='r'><b>"+bn(dead)+"</b><span>মারা গেছে</span></div></div>"+
- "<div class='row'><button onclick='chk(\"sell\")'>বাচ্চা বিক্রি</button><button class='g' onclick='chk(\"die\")'>বাচ্চা মারা গেছে</button></div><h2>বিক্রি ও মৃত্যুর তালিকা</h2><div class='box'>";
- var h=db.chk.slice().sort(function(x,y){return x.date<y.date?1:-1});
- if(!h.length)r+="<div class='empty'>এখনো কোনো হিসাব নেই</div>";
- h.forEach(function(x){r+="<div class='it'><div>"+fmt(x.date)+" · "+(x.kind==="sell"?"<span class='ok'>বিক্রি "+bn(x.n)+"টি × "+bn(x.price)+" = "+tk(x.n*x.price)+"</span>":"<span class='bad'>মারা গেছে "+bn(x.n)+"টি</span>")+"</div><div class='act'><button class='s' onclick='del(\"chk\","+x.id+")'>মুছুন</button></div></div>"});
- r+="</div>"+careFull()+"<h2>ফোটার হিসাব</h2>"+bsum();
- var d=db.inc.filter(function(x){return x.hatched!=null});
- if(d.length){r+="<div class='box'>";d.forEach(function(x){var c=cd(x);r+="<div class='it'><div>"+esc(x.name||"ব্যাচ")+" · "+fmt(x.start)+"<small>"+bn(x.count)+"টি ডিম থেকে "+bn(x.hatched)+"টি বাচ্চা · হ্যাচ রেট "+bn(x.hatched/x.count*100)+"%<br>উর্বরতা "+bn((x.count-c.clear)/x.count*100)+"% · ভালো ডিম থেকে ফোটা "+(live(x)?bn(x.hatched/live(x)*100):"০")+"%</small></div></div>"});r+="</div>"}
- return r;
-}
-function addInc(){var c=+v("c");if(!c||!v("d"))return alert("ডিমের সংখ্যা ও তারিখ দিন");
- var o={id:id(),name:v("n"),count:c,days:+v("k")||21,start:v("d"),cands:[],tr:null,hatched:null},w=[];
- if(c>seedStock())w.push("বীজ ডিম মজুদ "+bn(seedStock())+"টি, এর চেয়ে বেশি দিচ্ছেন।");
- if(setterUsed()+c>SETTER)w.push("সেটারে "+SETTER+"টির বেশি হয়ে যাবে।");
- if(w.length)ask(w.join(" ")+" তবুও যোগ করবেন?",[],function(){put("inc",o)},"যোগ করুন");else put("inc",o)}
-function upd(i,f){db.inc.forEach(function(x){if(x.id===i)f(x)});save();panel=null;draw()}
-function saveCand(){var c=+v("cc")||0,r=+v("cr")||0,b=+v("cb")||0,p=+v("cp")||0,dd=v("cdt")||today(),x=db.inc.filter(function(z){return z.id===panel.id})[0];
- if(!c&&!r&&!b)return alert("অন্তত একটি সংখ্যা লিখুন");
- if(c+r+b>live(x))return alert("ইনকিউবেটরে এখন ভালো ডিম আছে "+bn(live(x))+"টি, তার চেয়ে বেশি হয়ে গেছে");
- var k={clear:c,rot:r,broken:b,date:dd};
- if(p>0&&c>0){k.sid=id();db.esale.push({id:k.sid,date:dd,n:c,price:p,bad:0})}
- upd(x.id,function(z){z.cands=(z.cands||[]).concat([k])})}
-function delCand(i,j){ask("ক্যান্ডলিং এন্ট্রি মুছতে পাসওয়ার্ড দিন",[{l:"পাসওয়ার্ড",type:"pass"}],function(a){if(a[0]!==PW)return alert("পাসওয়ার্ড ভুল হয়েছে, কিছু মোছা হয়নি");var x=db.inc.filter(function(z){return z.id===i})[0],k=x.cands.splice(j,1)[0];if(k&&k.sid)db.esale=db.esale.filter(function(e){return e.id!==k.sid});save();draw()},"মুছুন")}
-function trf(i){var x=db.inc.filter(function(z){return z.id===i})[0];ask("কয়টি ডিম হ্যাচিং ট্রেতে উঠালেন?",[{l:"ডিমের সংখ্যা",d:live(x)}],function(a){var n=+a[0]||0;
- if(hatcherUsed()+n>HATCHER)ask("হ্যাচিং ট্রেতে "+HATCHER+"টির বেশি হয়ে যাবে। তবুও?",[],function(){upd(i,function(z){z.tr=n})},"হ্যাঁ");else upd(i,function(z){z.tr=n})},"সংরক্ষণ")}
-function hat(i){ask("কয়টি বাচ্চা ফুটেছে?",[{l:"বাচ্চার সংখ্যা"},{l:"বাচ্চার ১ম দিন (বাচ্চা বের করার তারিখ)",type:"date",d:today()}],function(a){if(a[0]==="")return;upd(i,function(x){x.hatched=+a[0]||0;x.hdate=a[1]||today()});alert("মনে রাখুন: আর্দ্রতা আবার "+bn(H1)+"% করুন। বাচ্চার ওষুধ-ভ্যাক্সিনের করণীয় হোমে আসবে।")},"সংরক্ষণ")}
-function moreHatch(i){ask("আরও কয়টি বাচ্চা বের করলেন?",[{l:"নতুন বাচ্চার সংখ্যা (আগেরগুলো বাদে)"}],function(a){var n=+a[0];if(!n)return;upd(i,function(x){x.hatched=(x.hatched||0)+n});alert("মোট বাচ্চা বেড়েছে। সব বাচ্চা বের হলে আর্দ্রতা আবার "+bn(H1)+"% করে দিন")},"যোগ করুন")}
-function chk(k){var f=[{l:k==="sell"?"কয়টি বাচ্চা বিক্রি করলেন?":"কয়টি বাচ্চা মারা গেছে?"}];if(k==="sell")f.push({l:"প্রতিটি বাচ্চার দাম (৳)"});
- ask(k==="sell"?"বাচ্চা বিক্রি":"বাচ্চা মারা গেছে",f,function(a){var n=+a[0];if(!n)return;if(n>chickStock())return alert("মজুদের চেয়ে বেশি");put("chk",{id:id(),date:today(),kind:k,n:n,price:k==="sell"?(+a[1]||0):0})},"সংরক্ষণ")}
-
-/* ---------- মুরগি ও ওষুধ ---------- */
-function flock(){
- var r="<h1>🐓 মুরগি (প্যারেন্টস) ও ওষুধ</h1><div class='sum'><div><b>"+bn(birds("মুরগি"))+"</b><span>মুরগি</span></div><div><b>"+bn(birds("মোরগ"))+"</b><span>মোরগ</span></div><div class='y w'><b>"+tk(parentsVal())+"</b><span>প্যারেন্টসের মোট মূল্য</span></div></div><div class='box'>";
- if(!db.flock.length)r+="<div class='empty'>কোনো গ্রুপ নেই</div>";
- db.flock.forEach(function(g){var a=ageNow(g);
-  r+="<div class='it'><div>"+g.type+" · "+bn(g.n)+"টি · "+(a==null?"বয়স দেওয়া নেই":bn(a)+" মাস")+"<small>প্রতিটি "+tk(g.price)+" · মোট "+tk(g.n*g.price)+(g.dead?" · মারা গেছে "+bn(g.dead):"")+"</small></div><div class='act'><button class='s p' onclick='sell("+g.id+")'>বিক্রি</button><button class='s' onclick='die("+g.id+")'>মারা গেছে</button><button class='s' onclick='del(\"flock\","+g.id+")'>মুছুন</button></div></div>"});
- r+="</div>"+deathsBox()+"<h2>নতুন মুরগি/মোরগ কেনা</h2><div class='box'>"+S("ধরন","fy",["মুরগি","মোরগ"])+
- "<div class='row'><div>"+F("কয়টি","fn","number","","min=1 inputmode=numeric")+"</div><div>"+F("বয়স (মাস)","fa","number","",INT)+"</div></div>"+F("প্রতিটির দাম (৳)","fp","number","",NUM)+"<button onclick='addFl()'>যোগ করুন</button></div>"+
- "<h2>ওষুধ ও ভিটামিন</h2><div class='box'><button class='o' style='margin:0' onclick='go(\"meds\")'>💊 ওষুধ ও ভ্যাক্সিন পেজে যান</button></div>";
- return r;
-}
-function addFl(){var n=+v("fn");if(!n)return alert("সংখ্যা দিন");put("flock",{id:id(),type:v("fy"),n:n,n0:n,age:v("fa")===""?null:+v("fa"),asOf:today(),price:+v("fp")||0,dead:0})}
-function sell(i){var g=db.flock.filter(function(z){return z.id===i})[0];ask(g.type+" বিক্রি",[{l:"কয়টি বিক্রি করলেন?"},{l:"প্রতিটির বিক্রয়মূল্য (৳)",d:g.price}],function(a){var n=+a[0],p=+a[1]||0;if(!n||n>g.n)return alert("সংখ্যা ঠিক নয়");
- g.n-=n;db.led.push({id:id(),date:today(),type:"in",cat:"মুরগি বিক্রি",amt:n*p,cost:n*g.price,note:g.type+" "+n+"টি × "+p});save();draw()},"বিক্রি করুন")}
-function die(i){var g=db.flock.filter(function(z){return z.id===i})[0],a0=ageNow(g);
- ask(g.type+" মারা গেছে"+(a0!=null?" ("+bn(a0)+" মাসের গ্রুপ)":""),[{l:"কয়টি মারা গেছে?",d:1},{l:"প্রতিটির ওজন (কেজি) — জানা থাকলে"},{l:"কারণ (ইচ্ছামত)",type:"text"}],function(a){var n=+a[0],w=+a[1]||0,why=(a[2]||"").trim();
-  if(!n||n>g.n)return alert("সংখ্যা ঠিক নয়");
-  var mk=w>0&&rt("kg")>0,amt=mk?n*w*rt("kg"):n*g.price,how=mk?"বাজার দর "+tk(rt("kg"))+"/কেজি":"ক্রয়মূল্য "+tk(g.price);
-  g.n-=n;g.dead=(g.dead||0)+n;
-  db.led.push({id:id(),date:today(),type:"loss",grp:"",cat:"মুরগি মারা যাওয়ার ক্ষতি",amt:amt,note:g.type+" "+bn(n)+"টি"+(a0!=null?" · "+bn(a0)+" মাস":"")+(w>0?" · "+bn(w)+" কেজি":"")+" · "+how+(why?" · "+esc(why):""),dead:{gid:g.id,n:n,w:w,m:how}});
-  save();draw();alert("হিসাব উঠেছে, ক্ষতি "+tk(amt))},"সংরক্ষণ")}
-function deathsBox(){var a=db.led.filter(function(x){return x.type==="loss"&&x.dead}).sort(function(x,y){return x.date<y.date?1:-1});
- if(!a.length)return "";
- return "<h2>মারা যাওয়ার তালিকা ও ক্ষতি</h2><div class='box'>"+a.map(function(x){return "<div class='it'><div>"+fmt(x.date)+"<small>"+x.note+"</small></div><div class='act'><b class='bad'>"+tk(x.amt)+"</b><br><button class='s' onclick='undoDeath("+x.id+")'>বাতিল</button></div></div>"}).join("")+"<div class='it'><b>মোট ক্ষতি</b><b class='bad'>"+tk(sum(a,function(x){return x.amt}))+"</b></div></div>"}
-function undoDeath(i){ask("ভুল হলে মৃত্যুর এন্ট্রি বাতিল করতে পাসওয়ার্ড দিন (মুরগির সংখ্যা ফিরে আসবে)",[{l:"পাসওয়ার্ড",type:"pass"}],function(a){if(a[0]!==PW)return alert("পাসওয়ার্ড ভুল হয়েছে");
- var e=db.led.filter(function(x){return x.id===i})[0];if(!e||!e.dead)return;var g=db.flock.filter(function(z){return z.id===e.dead.gid})[0];if(g){g.n+=e.dead.n;g.dead=Math.max(0,(g.dead||0)-e.dead.n)}
- db.led=db.led.filter(function(x){return x.id!==i});save();draw()},"বাতিল করুন")}
-function addMed(){if(!v("mn")||!v("md"))return alert("নাম ও তারিখ দিন");put("med",{id:id(),type:v("my"),name:v("mn"),date:v("md"),rep:+v("mr")||0,cost:+v("mc")||0,done:false})}
-function done(i){var n=null;db.med.forEach(function(x){if(x.id===i){x.done=true;if(x.rep)n={id:id(),type:x.type,name:x.name,date:addD(today(),x.rep),rep:x.rep,cost:x.cost,done:false}}});if(n)db.med.push(n);save();draw()}
 
 /* ---------- খাবার ---------- */
 function feed(){
- var fpd=feedPerDay(),ap=feedAvgPrice(),spent=sum(db.feed.filter(function(x){return x.kind==="buy"}),function(x){return x.kg*(x.price||0)}),left=feedLeft(),ak=autoKg(),rl=autoRules();
- var r="<h1>🌾 খাবারের হিসাব</h1><div class='sum'><div class='y'><b>"+bn(left)+" কেজি</b><span>বাকি আছে"+(fpd&&left>0?"<br>প্রায় "+bn(Math.floor(left/fpd))+" দিন চলবে":"")+"</span></div><div><b>"+(fpd?bn(fpd)+" কেজি":"—")+"</b><span>দৈনিক গড় ব্যবহার</span></div><div><b>"+bn(autoUse())+" কেজি</b><span>অটো হিসাবে গেছে</span></div><div><b>"+bn(manualUse())+" কেজি</b><span>নিজে এন্ট্রি (বেশি/কম)</span></div></div>"+
- "<div class='sum'><div><b>"+tk(feedCost().used)+"</b><span>খাবারের খরচ (ব্যবহার হয়েছে)<br>"+bn(feedCost().kg)+" কেজি × "+tk(feedCost().ap)+"</span></div><div class='y'><b>"+tk(feedCost().stock)+"</b><span>মজুদ খাবারের মূল্য<br>"+bn(left)+" কেজি × "+tk(ap)+"</span></div></div><div class='box'><b>🔁 অটো রেগুলার খাবার</b>"+(ak?"<div class='it'><div>প্রতিদিন <b>"+bn(ak)+" কেজি</b><small>সকাল "+bn(ak/2)+" + বিকাল "+bn(ak/2)+" কেজি · নিজে নিজে বাদ যায়<br>আজ এখন পর্যন্ত ধরা হয়েছে "+bn(ak*todayFrac())+" কেজি (সকাল ৮টার পর অর্ধেক, বিকাল ৫টার পর পুরো)</small></div></div>":"<small>অটো এখন বন্ধ আছে</small>");
- rl.forEach(function(x){r+="<div class='it'><div>"+fmt(x.from)+" থেকে<small>"+bn(x.kg)+" কেজি প্রতিদিন</small></div><div class='act'><button class='s' onclick='del(\"cfg\","+x.id+")'>মুছুন</button></div></div>"});
- r+=F("প্রতিদিন মোট কত কেজি","ak","number",ak||3,"min=0 step=0.1 inputmode=decimal")+F("কোন তারিখ থেকে","af","date",today())+"<button class='g' onclick='addAuto()'>অটো সেট / বদল করুন</button><small>পরিমাণ বদলালে নতুন তারিখ ও কেজি দিয়ে আবার সেট করুন। বন্ধ করতে ০ দিন।</small></div>"+
- "<h2>নিজে এন্ট্রি</h2><div class='box'><label>কী করলাম</label><select id='k'><option value='use'>অতিরিক্ত খাবার দিলাম (অটোর বাইরে)</option><option value='less'>কম দিলাম / দিইনি (অটো থেকে ফেরত)</option><option value='buy'>খাবার বানালাম / কিনলাম / আগের মজুদ</option></select>"+
- "<div class='row'><div>"+F("কত কেজি","g","number","","min=0 step=0.1 inputmode=decimal")+"</div><div>"+F("প্রতি কেজি দাম (৳)","p","number","",NUM)+"</div></div>"+F("তারিখ (আগের তারিখও চলবে)","d","date",today())+F("নোট (যেমন: শাকসবজি আলাদা, ভুট্টা)","n","text")+
- "<button onclick='addFeed()'>সংরক্ষণ করুন</button><small>নিয়মিত ৩ কেজি অটো বাদ যায়, তাই শুধু বেশি বা কম দিলে এখানে লিখবেন। নতুন খাবার বানালে “বানালাম” বেছে কেজি ও দাম লিখুন। দাম দিলে খাবারের খরচে ধরা হবে।</small></div><h2>এন্ট্রির তালিকা</h2><div class='box'>";
- var a=db.feed.slice().sort(function(x,y){return x.date<y.date?1:-1});
- if(!a.length)r+="<div class='empty'>এখনো কোনো এন্ট্রি নেই</div>";
- a.forEach(function(x){r+="<div class='it'><div>"+fmt(x.date)+" · "+(x.kind==="buy"?"<span class='ok'>+ "+bn(x.kg)+" কেজি জমা"+(x.price?" × "+bn(x.price)+" = "+tk(x.kg*x.price):" (দাম দেওয়া নেই)")+"</span>":x.kind==="less"?"<span class='ok'>+ "+bn(x.kg)+" কেজি ফেরত (কম দিয়েছি)</span>":"− "+bn(x.kg)+" কেজি অতিরিক্ত দিয়েছি")+(x.note?"<small>"+esc(x.note)+"</small>":"")+"</div><div class='act'><button class='s' onclick='del(\"feed\","+x.id+")'>মুছুন</button></div></div>"});
- return r+"</div>";
+ return "<h2>খাবার হিসাব</h2><div class='grid'>"+kpi("",bn(feedLeft())+" কেজি","বাকি খাবার")+kpi(daysLeft()<=5?"warn":"",bn(daysLeft())+" দিন","চলবে")+kpi("",bn(D.feedDaily)+" কেজি","প্রতিদিন ব্যবহার")+kpi("",tk(D.feedKg*D.feedPrice),"মজুদ মূল্য")+"</div>"+
+ "<div class='card'><div class='bar "+(daysLeft()<=5?"y":"")+"'><i style='width:"+Math.min(100,daysLeft()/30*100)+"%'></i></div><small class='note'>৩০ দিনের হিসাবে বাকি আছে</small></div>"+
+ "<div class='btns'><button>+ খাবার কেনা</button><button>+ ব্যবহার</button><button class='o'>দাম বদল</button></div>";
 }
-function addAuto(){var k=+v("ak"),f=v("af");if(v("ak")===""||isNaN(k)||!f)return alert("কেজি ও তারিখ দিন");
- db.cfg=(db.cfg||[]).filter(function(x){return !(x.type==="autofeed"&&x.from===f)});db.cfg.push({id:id(),type:"autofeed",from:f,kg:k});save();draw()}
-function addFeed(){var g=+v("g");if(!g||!v("d"))return alert("কেজি ও তারিখ দিন");put("feed",{id:id(),kind:v("k"),kg:g,price:+v("p")||0,date:v("d"),note:v("n")})}
 
-/* ---------- আয়-ব্যয় ---------- */
-var MON=today().slice(0,7);
-var GR=[["d","দৈনিক খরচ",["সবজি (খাবার)","অন্য খাবার","শ্রমিক মজুরি","পরিবহন খরচ","অন্যান্য দৈনিক"]],["o","এককালীন খরচ",["লাইট/বাল্ব/তার","ঘর/খাঁচা মেরামত","কারেন্ট বিল","তুষের বিল","অন্যান্য এককালীন"]]];
-function rowsOf(z,c){return Object.keys(z).map(function(k){return "<div class='it'><span>"+k+"</span><b class='"+c+"'>"+tk(z[k])+"</b></div>"}).join("")}
+/* ---------- ওষুধ ও ভ্যাক্সিন (তারিখ অনুযায়ী সাজানো) ---------- */
+function med(){
+ var t=today(),list=D.meds.slice().sort(function(a,b){return a.d<b.d?-1:1}),h="<h2>ওষুধ ও ভ্যাক্সিন <small>কখন, কোন ব্যাচে</small></h2><div class='card'>";
+ if(!list.length)h+="<div class='empty'>কোনো ওষুধ বাকি নেই</div>";
+ list.forEach(function(m){var d=diff(m.d,t),p=d<0?"<span class='pill r'>"+bn(-d)+" দিন দেরি</span>":d===0?"<span class='pill y'>আজ</span>":"<span class='pill b'>"+fmt(m.d)+"</span>";
+  h+="<div class='row'><div>"+m.name+"<small>"+m.type+" · সব ব্যাচ</small></div>"+p+"</div>"});
+ return h+"</div>";
+}
+
+/* ---------- হিসাব (মোট) ---------- */
 function money(){
- var md=fin(MON),t=today(),tdy=sum(db.led.filter(function(x){return x.date===t&&x.type==="out"}),function(x){return x.amt})+sum(db.feed.filter(function(x){return x.date===t&&x.kind==="buy"}),function(x){return x.kg*(x.price||0)});
- var r="<h1>💰 আয়-ব্যয়ের হিসাব</h1><div class='sum'><div class='r'><b>"+tk(tdy)+"</b><span>আজকের খরচ</span></div><div class='y'><b>"+tk(md.food)+"</b><span>এই মাসে খাবার খরচ<br>(রেগুলার অটো + নিজে এন্ট্রি + সবজি)</span></div></div>"+
- "<div class='box'><label>খরচ বা আয়ের ধরন</label><select id='ct'>"+GR.map(function(g){return "<optgroup label='"+g[1]+"'>"+g[2].map(function(c){return "<option value='out|"+g[0]+"|"+c+"'>"+c+"</option>"}).join("")+"</optgroup>"}).join("")+
- "<optgroup label='আয়'><option value='in||অন্যান্য আয়'>অন্যান্য আয়</option></optgroup><optgroup label='সম্পদ কেনা (ইনভেস্ট)'><option value='asset||ইনকিউবেটর/ঘর/সরঞ্জাম'>ইনকিউবেটর/ঘর/সরঞ্জাম</option></optgroup></select>"+
- F("টাকা","am","number","",NUM)+F("তারিখ (আগের তারিখও চলবে)","ld","date",t)+F("নোট (যেমন: লাউ ২টি, ২টি বাল্ব)","ln","text")+"<button onclick='addLed()'>সংরক্ষণ করুন</button><small>সবজি “দৈনিক খরচ”-এ খাবার হিসেবে ধরা হয়। লাইট, মেরামত ইত্যাদি “এককালীন খরচ”-এ।</small></div>"+
- "<h2>মাসের হিসাব</h2><div class='box'><label>কোন মাস দেখবেন</label><input id='mo' type='month' value='"+MON+"' onchange='MON=this.value;draw()'></div>"+
- "<div class='sum'><div><b class='ok'>"+tk(md.ti)+"</b><span>মোট আয়</span></div><div class='r'><b class='bad'>"+tk(md.to+md.tl)+"</b><span>মোট খরচ ও ক্ষতি</span></div><div class='y w'><b>"+(md.net>=0?"লাভ ":"লস ")+tk(Math.abs(md.net))+"</b><span>এই মাসে</span></div></div><div class='box'>";
- var any=false;
- function sec(title,z,c){var k=Object.keys(z);if(!k.length)return;any=true;r+="<div class='it' style='background:var(--inp);border-radius:6px;padding:6px 8px'><b>"+title+"</b><b class='"+c+"'>"+tk(tot(z))+"</b></div>"+rowsOf(z,c)}
- sec("আয়",md.i,"ok");sec("দৈনিক খরচ",md.od,"bad");sec("এককালীন খরচ",md.oo,"bad");sec("ক্ষতি (হিসাবে ধরা)",md.l,"bad");
- if(md.cash){any=true;r+="<div class='it'><span>ℹ️ নগদে ডিম বিক্রি <small style='display:inline'>(আয়ে আলাদা ধরা হয়নি)</small></span><b>"+tk(md.cash)+"</b></div>"}
- if(md.ta){any=true;r+="<div class='it'><span>সম্পদ কেনা (লাভ-লসে ধরা হয় না)</span><b>"+tk(md.ta)+"</b></div>"}
- if(!any)r+="<div class='empty'>এই মাসে কোনো হিসাব নেই</div>";
- r+="</div><small style='color:var(--sub)'>ডিমের আয় = সংগ্রহ করা সব ডিম (বীজ + খাওয়ার) × ওই দিনের ডিমের রেট। এর সাথে নগদ বিক্রি আলাদা যোগ হয় না। খাবার, ওষুধ ও বাচ্চা বিক্রির হিসাব অন্য ট্যাব থেকে নিজেই আসে।</small><h2>এই মাসের এন্ট্রি</h2><div class='box'>";
- var a=db.led.filter(function(x){return x.date.slice(0,7)===MON}).sort(function(x,y){return x.date<y.date?1:-1});
- if(!a.length)r+="<div class='empty'>কোনো এন্ট্রি নেই</div>";
- a.forEach(function(x){var g=x.type==="out"?((x.grp||(OT.indexOf(x.cat)>=0?"o":"d"))==="o"?"এককালীন":"দৈনিক"):"";r+="<div class='it'><div>"+x.cat+" · <b class='"+(x.type==="in"?"ok":x.type==="asset"?"":"bad")+"'>"+tk(x.amt)+"</b><small>"+fmt(x.date)+(g?" · "+g:"")+(x.note?" · "+esc(x.note):"")+"</small></div><div class='act'><button class='s' onclick='del(\"led\","+x.id+")'>মুছুন</button></div></div>"});
- return r+"</div>";
-}
-function addLed(){var a=+v("am"),p=v("ct").split("|");if(!a||!v("ld"))return alert("টাকা ও তারিখ দিন");put("led",{id:id(),date:v("ld"),type:p[0],grp:p[1],cat:p[2],amt:a,note:v("ln")})}
-
-function bsum(){var d=db.inc.filter(function(x){return x.hatched!=null}),sc=sum(d,function(x){return x.count}),sh=sum(d,function(x){return x.hatched}),scl=sum(d,function(x){return cd(x).clear}),sr=sum(d,function(x){return cd(x).rot}),sb=sum(d,function(x){return cd(x).broken});
- if(!d.length)return "<div class='box'><small>ব্যাচ শেষ হলে এখানে মোট হিসাব দেখাবে।</small></div>";
- return "<div class='sum'><div class='y'><b>"+bn(d.length)+"</b><span>সম্পন্ন ব্যাচ</span></div><div><b>"+bn(sh)+"</b><span>মোট বাচ্চা ফুটেছে<br>"+bn(sc)+"টি ডিম থেকে</span></div><div><b>"+bn(sh/sc*100)+"%</b><span>গড় হ্যাচ রেট</span></div><div><b>"+bn((sc-scl)/sc*100)+"%</b><span>গড় উর্বরতা<br>বাওয়া "+bn(scl)+" · নষ্ট "+bn(sr)+" · ভাঙা "+bn(sb)+"</span></div></div>"}
-
-/* ---------- ওজন ---------- */
-function wkg(k){return k<1?bn(k*1000)+" গ্রাম":bn(k)+" কেজি"}
-function wtargets(){var a=db.flock.map(function(g){var m=ageNow(g);return{id:"f:"+g.id,l:g.type+(m!=null?" · "+bn(m)+" মাস":"")+" ("+bn(g.n)+"টি)"}});
- return a.concat(db.inc.filter(function(x){return x.hatched!=null}).map(function(x){return{id:"b:"+x.id,l:"ব্যাচ: "+(x.name||fmt(x.start))+" ("+bn(x.hatched)+" বাচ্চা)"}}))}
-function wlog(t){return db.wt.filter(function(x){return x.tid===t}).sort(function(x,y){return x.date<y.date?-1:1})}
-function pwAvg(){var w=0,n=0;db.flock.forEach(function(g){var l=wlog("f:"+g.id);if(l.length&&g.n){w+=l[l.length-1].avg*g.n;n+=g.n}});return n?w/n:null}
-function spark(l){if(l.length<2)return "";var ys=l.map(function(x){return x.avg}),mn=Math.min.apply(0,ys),mx=Math.max.apply(0,ys),rg=mx-mn||1,p=ys.map(function(y,i){return (10+i*280/(ys.length-1)).toFixed(1)+","+(50-(y-mn)/rg*40).toFixed(1)}).join(" ");
- return "<svg viewBox='0 0 300 60' style='width:100%;height:60px;margin-top:6px'><polyline points='"+p+"' style='fill:none;stroke:var(--ac);stroke-width:3;stroke-linejoin:round'/></svg>"}
-function wt(){
- var T=wtargets(),pa=pwAvg(),any=false;
- var r="<h1>⚖️ গড় ওজন</h1><div class='sum'><div class='y'><b>"+(pa==null?"—":wkg(pa))+"</b><span>প্যারেন্টদের গড় ওজন<br>(সর্বশেষ মাপ থেকে)</span></div><div><b>"+bn(db.wt.length)+"</b><span>মোট মাপের এন্ট্রি</span></div></div>";
- r+="<div class='box'>"+(T.length?"<label>কার ওজন মাপলেন</label><select id='wi'>"+T.map(function(o){return "<option value='"+o.id+"'>"+o.l+"</option>"}).join("")+"</select>"+F("মাপার তারিখ (আগের তারিখও চলবে)","wd","date",today())+
- "<div class='row'><div>"+F("কয়টি মাপলেন","wn","number","","min=1 inputmode=numeric")+"</div><div>"+F("মোট ওজন","wk","number","","min=0 step=0.01 inputmode=decimal")+"</div></div>"+S("একক","wu",["কেজি","গ্রাম"])+"<button onclick='addWt()'>সংরক্ষণ করুন</button><small>যেমন ১০টি মুরগি একসাথে মেপে ১৮ কেজি হলে: ১০ ও ১৮ লিখুন, গড় নিজে হিসাব হবে। একটি মাপলে ১ লিখুন।</small>":"<div class='empty'>আগে মুরগির গ্রুপ বা ফোটা ব্যাচ যোগ করুন</div>")+"</div>";
- T.forEach(function(o){var l=wlog(o.id);if(!l.length)return;any=true;
-  var last=l[l.length-1],pr=l.length>1?l[l.length-2]:null,first=l[0],ch=pr?last.avg-pr.avg:0,dd=pr?diff(last.date,pr.date):0,gain=last.avg-first.avg,gd=diff(last.date,first.date),h="";
-  l.slice().reverse().forEach(function(x){h+="<div class='it'><div>"+fmt(x.date)+"<small>"+bn(x.n)+"টি মেপেছেন · মোট "+wkg(x.kg)+"</small></div><div class='act'><b>"+wkg(x.avg)+"</b><br><button class='s' onclick='del(\"wt\","+x.id+")'>মুছুন</button></div></div>"});
-  r+="<h2>"+o.l+"</h2><div class='box'><div class='sum' style='margin:0'><div class='y'><b>"+wkg(last.avg)+"</b><span>সর্বশেষ গড় ("+fmt(last.date)+")</span></div>"+(pr?"<div class='"+(ch<0?"r":"")+"'><b>"+(ch>=0?"+":"−")+wkg(Math.abs(ch))+"</b><span>আগের মাপ থেকে, "+bn(dd)+" দিনে"+(dd>0?"<br>দৈনিক "+(ch>=0?"+":"−")+bn(Math.abs(ch)/dd*1000)+" গ্রাম":"")+"</span></div>":"")+"</div>"+spark(l)+(gd>0?"<small>প্রথম মাপ থেকে: "+(gain>=0?"+":"−")+wkg(Math.abs(gain))+" · "+bn(gd)+" দিনে"+"</small>":"")+"<div style='margin-top:8px'>"+h+"</div></div>"});
- if(!any)r+="<div class='empty' style='color:var(--onbg)'>এখনো কোনো ওজন লেখা হয়নি</div>";
- return r;
-}
-function addWt(){var n=+v("wn"),w=+v("wk"),k=v("wu")==="গ্রাম"?w/1000:w;if(!n||!w||!v("wd")||!v("wi"))return alert("কার ওজন, কয়টি মাপলেন ও মোট ওজন দিন");put("wt",{id:id(),tid:v("wi"),date:v("wd"),n:n,kg:k,avg:k/n})}
-
-
-/* ---------- বাজার রেট, ওজন, ব্যাচ ড্যাশবোর্ড ---------- */
-function rlist(){return (db.cfg||[]).filter(function(x){return x.type==="rates"}).map(function(x){var y=Object.assign({},x);y.from=x.from||"2000-01-01";return y}).sort(function(a,b){return a.from<b.from?-1:1})}
-function rateAt(k,d,def){var L=rlist(),val=0,i;for(i=0;i<L.length;i++){if(L[i].from<=d&&+L[i][k]>0)val=+L[i][k]}
- if(!val)for(i=0;i<L.length;i++){if(+L[i][k]>0){val=+L[i][k];break}}
- return val||def||0}
-function rt(k,d){return rateAt(k,today(),d)}
-function kgg(k){var g=Math.round(k*1000);return bn(Math.floor(g/1000))+" কেজি "+bn(g%1000)+" গ্রাম"}
-function wlatest(t){var l=wlog(t);return l.length?l[l.length-1].avg:null}
-function totalW(){var w=0,n=0;db.flock.forEach(function(g){var a=wlatest("f:"+g.id);if(a!=null&&g.n){w+=a*g.n;n+=g.n}});if(!n)return null;var m=w/n,t=0;db.flock.forEach(function(g){var a=wlatest("f:"+g.id);t+=(a!=null?a:m)*g.n});return t}
-function batchLeft(){var o=db.inc.filter(function(x){return x.hatched!=null}).sort(function(a,b){return a.start<b.start?-1:1}).map(function(x){return{x:x,left:x.hatched,age:diff(today(),addD(x.start,x.days))}}),rem=sum(db.chk,function(k){return k.n});o.forEach(function(q){var t=Math.min(q.left,rem);q.left-=t;rem-=t});return o}
-function chickBuckets(){var b={chick:0,m1:0,m2:0,m3:0};batchLeft().forEach(function(o){b[o.age<30?"chick":o.age<60?"m1":o.age<90?"m2":"m3"]+=o.left});return b}
-function growW(){var w=0;batchLeft().forEach(function(o){var a=wlatest("b:"+o.x.id);if(a!=null)w+=a*o.left});return w}
-function parentVal(){var w=totalW();if(rt("kg")>0&&w!=null)return{v:w*rt("kg"),m:"ওজন "+kgg(w)+" × "+tk(rt("kg"))+"/কেজি"};return{v:parentsVal(),m:"ক্রয়মূল্য ধরে (ওজন ও কেজি রেট দিলে বাজার দরে হবে)"}}
-function feedCost(){var ap=feedAvgPrice(),kg=autoUse()+manualUse();return{kg:kg,ap:ap,used:kg*ap,stock:Math.max(0,feedLeft())*ap}}
-function ownEggs(){return sum(db.esale.filter(function(x){return !x.n&&x.own}),function(x){return x.bad})+sum(db.eggs.filter(function(x){return !x.seed&&!x.table&&x.seedBad}),function(x){return x.seedBad})}
-function addOwn(){var c=+v("oc"),d=v("od"),src=v("ou"),why=v("orr");if(!c||!d)return alert("সংখ্যা ও তারিখ দিন");
- var o=src==="বীজ ডিম"?["eggs",{id:id(),date:d,seed:0,table:0,seedBad:c,note:why}]:["esale",{id:id(),date:d,n:0,price:0,bad:c,note:why,own:1}],st=src==="বীজ ডিম"?seedStock():tableStock();
- if(c>st)ask(src+" মজুদ আছে "+bn(st)+"টি, এর চেয়ে বেশি দিচ্ছেন। তবুও সংরক্ষণ করবেন?",[],function(){put(o[0],o[1])},"সংরক্ষণ করুন");else put(o[0],o[1])}
-function runningBatches(){var all=db.inc.slice().sort(function(a,b){return a.start<b.start?-1:1}),act=all.filter(function(x){return x.hatched==null});
- if(!act.length)return "<div class='box'><div class='empty'>এখন কোনো ব্যাচ চলছে না</div></div>";
- return act.map(function(x){var n=all.indexOf(x)+1,d=diff(today(),x.start),td=nextTodo(x);
-  return "<div class='box'><div class='it' style='border:0;padding:0'><b style='font-size:17px'>ব্যাচ "+bn(n)+" · চলমান</b><span>"+bn(Math.max(0,d))+" / "+bn(x.days)+" দিন</span></div><small style='color:var(--mute)'>"+fmt(x.start)+" · "+bn(x.count)+"টি ডিম বসানো · ভালো ডিম "+bn(live(x))+"টি · "+(x.tr!=null?"হ্যাচিং ট্রেতে":"সেটারে")+"</small><div class='bar'><i style='width:"+Math.min(100,Math.max(0,d)/x.days*100)+"%'></i></div><b class='"+(td.indexOf("এখন")===0?"bad":"ok")+"'>👉 "+td+"</b><br><b>"+envNow(x)+"</b></div>"}).join("")}
-function marketBox(){
- var pv=parentVal(),b=chickBuckets(),rc=rt("chick")||avgChick(),eg=rt("egg",20),es=Math.max(0,seedStock())+Math.max(0,tableStock()),RL=rlist(),
- rows=[["🐓 মুরগি-মোরগ (প্যারেন্ট)",bn(birds())+"টি",pv.v,pv.m],["🐥 বাচ্চা (০–২৯ দিন)",bn(b.chick)+"টি",b.chick*rc,rc?"প্রতিটি "+tk(rc):"রেট দিন"],["১ মাসের মুরগি",bn(b.m1)+"টি",b.m1*rt("m1"),rt("m1")?"প্রতিটি "+tk(rt("m1")):"রেট দিন"],["২ মাসের মুরগি",bn(b.m2)+"টি",b.m2*rt("m2"),rt("m2")?"প্রতিটি "+tk(rt("m2")):"রেট দিন"],["৩ মাসের মুরগি",bn(b.m3)+"টি",b.m3*rt("m3"),rt("m3")?"প্রতিটি "+tk(rt("m3")):"রেট দিন"],["🥚 ডিম (বীজ + খাওয়ার)",bn(es)+"টি",es*eg,"প্রতিটি "+tk(eg)]],
- total=sum(rows,function(r){return r[2]});
- function Q(l,i,k){return F(l,i,"number",rt(k)||"",NUM)}
- return "<h2>বাজার মূল্য (আপনার রেট ধরে)</h2><div class='box'>"+rows.map(function(r){return "<div class='it'><div>"+r[0]+"<small>"+r[1]+" · "+r[3]+"</small></div><b>"+tk(r[2])+"</b></div>"}).join("")+"<div class='it'><b>মুরগি ও ডিমের মোট বাজার মূল্য</b><b class='ok'>"+tk(total)+"</b></div></div>"+
- "<small style='color:var(--sub)'>রেট বদলাতে সবার শেষের “রেট” ট্যাবে যান।</small>"}
-
-function ratesTab(){
- var RL=rlist();function Q(l,i,k){return F(l,i,"number",rt(k)||"",NUM)}
- var cur=[["ডিম",rt("egg",20)],["০ বাচ্চা",rt("chick")],["মোরগ-মুরগি (কেজি)",rt("kg")],["১ মাস",rt("m1")],["২ মাস",rt("m2")],["৩ মাস",rt("m3")]];
- return "<h1>📈 রেট</h1><div class='sum'>"+cur.map(function(c){return "<div><b>"+(c[1]?tk(c[1]):"—")+"</b><span>এখনকার "+c[0]+" রেট</span></div>"}).join("")+"</div>"+
- "<div class='box'><b>রেট বসান / বদলান</b>"+(RL.length?"<small>শেষ বদল: "+(RL[RL.length-1].from==="2000-01-01"?"শুরু থেকে":fmt(RL[RL.length-1].from)+" থেকে")+" চলছে</small>":"")+F("কোন তারিখ থেকে এই রেট (আজ বা আগের তারিখ)","rdt","date",today())+
- Q("আজকের ডিমের রেট (প্রতিটি ৳)","regg","egg")+Q("আজকের ০ বাচ্চার রেট (প্রতিটি ৳)","rchk","chick")+Q("আজকের মোরগ মুরগির রেট (কেজি ৳)","rkg","kg")+Q("আজকের ১ মাসের বাচ্চার রেট (প্রতিটি ৳)","rm1","m1")+Q("আজকের ২ মাসের বাচ্চার রেট (প্রতিটি ৳)","rm2","m2")+Q("আজকের ৩ মাসের বাচ্চার রেট (প্রতিটি ৳)","rm3","m3")+
- "<button onclick='saveRates()'>রেট সংরক্ষণ করুন</button><small>রেট বদলালে বাজার মূল্য ও এসেট নিজে বদলে যায়। মোরগ-মুরগির মূল্য ওজন (ওজন ট্যাবে লেখা) × কেজি রেট ধরে হয়। বাচ্চার বয়স ফোটার তারিখ থেকে নিজে ধরা হয়।</small></div>"+rateHist()}
-
-function saveRates(){var f=v("rdt")||today(),o={id:+f.replace(/-/g,""),type:"rates",from:f,date:f,kg:+v("rkg")||0,egg:+v("regg")||0,chick:+v("rchk")||0,m1:+v("rm1")||0,m2:+v("rm2")||0,m3:+v("rm3")||0};
- db.cfg=(db.cfg||[]).filter(function(x){return !(x.type==="rates"&&(x.from||x.date)===f)});db.cfg.push(o);save();draw();alert("রেট সংরক্ষণ হয়েছে ("+fmt(f)+" থেকে)")}
-function rateHist(){var L=rlist().slice().reverse();if(!L.length)return "";
- return "<div class='box'><b>রেটের ইতিহাস</b><small>যে তারিখ থেকে রেট বদলেছে, সেদিন থেকে ওই রেটে হিসাব হয়। প্রথম রেটের আগের দিনগুলোতে প্রথম রেটই ধরা হয়।</small>"+L.map(function(x){return "<div class='it'><div>"+(x.from==="2000-01-01"?"শুরু থেকে":fmt(x.from)+" থেকে")+"<small>ডিম "+(x.egg?bn(x.egg):"—")+" · ০ বাচ্চা "+(x.chick?bn(x.chick):"—")+" · কেজি "+(x.kg?bn(x.kg):"—")+" · ১ মাস "+(x.m1?bn(x.m1):"—")+" · ২ মাস "+(x.m2?bn(x.m2):"—")+" · ৩ মাস "+(x.m3?bn(x.m3):"—")+"</small></div><div class='act'><button class='s' onclick='del(\"cfg\","+x.id+")'>মুছুন</button></div></div>"}).join("")+"</div>"}
-
-
-
-/* ---------- বাচ্চার ওষুধ ও ভ্যাক্সিন (১ম থেকে ৬০ দিন) ---------- */
-var AD="১ লিটার পানিতে ১ মিলি";
-var CARE=[
- {k:"d1",f:1,t:1,ic:"💧",h:"লাইসোভিট",d:"১ লিটার পানিতে ১ গ্রাম, বাচ্চাকে ২ ঘণ্টা খাওয়ান।"},
- {k:"ab",f:1,t:3,ic:"💊",h:"অ্যান্টিবায়োটিক: সিপ্রোসিন ও অ্যামোক্সিসিলিন",d:"লাইসোভিটের পর, ১ লিটার পানিতে ১ গ্রাম করে, টানা ৭২ ঘণ্টা (দিন ১–৩)।"},
- {k:"w4",f:4,t:4,ic:"🚰",h:"শুধু সাদা পানি",d:"আজ কোনো ওষুধ নয়।"},
- {k:"nd1",f:5,t:5,vac:1,ic:"💉",h:"রানীক্ষেত (BCRDV) ভ্যাক্সিন",d:"ভ্যাক্সিনের ৬ ঘণ্টা আগে AD3E ভিটামিন, আর ভ্যাক্সিন করানোর পর থেকে ৬ ঘণ্টা AD3E ভিটামিন ("+AD+")।"},
- {k:"w6",f:6,t:6,ic:"🚰",h:"সাদা পানি",d:"আজ কোনো ওষুধ নয়।"},
- {k:"th",f:7,t:9,ic:"💊",h:"থায়াবিন অথবা ভিটা থ্রি (যেকোনো ১টি)",d:AD+", টানা ৭২ ঘণ্টা (দিন ৭–৯)।"},
- {k:"w10",f:10,t:10,ic:"🚰",h:"সাদা পানি",d:"৭২ ঘণ্টার পর আবার সাদা পানি।"},
- {k:"gb1",f:10,t:13,win:1,vac:1,ic:"💉",h:"গাম্বোরো ভ্যাক্সিন — ১ম ডোজ",d:"১০ থেকে ১৩ তম দিনের যেকোনো ১ দিন। ভ্যাক্সিনের ৬ ঘণ্টা আগে ও পরে ৬ ঘণ্টা AD3E ভিটামিন ("+AD+")।"},
- {k:"lv",f:14,t:17,ic:"🌿",h:"লিভার টনিক",d:"প্রতিদিন সকালে ১ বেলা ("+AD+")।"},
- {k:"gb2",f:17,t:18,win:1,vac:1,ic:"💉",h:"গাম্বোরো ভ্যাক্সিন — ২য় ডোজ",d:"১৭ অথবা ১৮ তম দিনে। ভ্যাক্সিনের ৬ ঘণ্টা আগে ও পরে ৬ ঘণ্টা AD3E ভিটামিন ("+AD+")।"},
- {k:"nd2",f:21,t:22,win:1,vac:1,ic:"💉",h:"রানীক্ষেত ভ্যাক্সিন — ২য় ডোজ (সম্পূর্ণ)",d:"২১ বা ২২ তম দিনে। ভ্যাক্সিনের ৬ ঘণ্টা আগে ও পরে ৬ ঘণ্টা AD3E ভিটামিন ("+AD+")।"},
- {k:"wa",after:"nd2",f:22,t:23,ic:"🚰",h:"২৪ ঘণ্টা সাদা পানি",d:"রানীক্ষেত ২য় ডোজের পর।"},
- {k:"am",f:25,t:60,cyc:1,ic:"🌙",h:"অ্যামাইনোভিট প্লাস (ঐচ্ছিক, ওজন বাড়াতে)",d:AD+", শুধু রাতে। টানা ৪ দিন দেওয়া, ৬ দিন বন্ধ, আবার ৪ দিন।"}];
-function careHd(x){return x.hdate||addD(x.start,TDAY+HPH)}
-function careDay(x){return diff(today(),careHd(x))+1}
-function careDone(bid,k){return (db.cfg||[]).filter(function(c){return c.type==="caredone"&&c.bid===bid&&c.key===k})[0]}
-function careDue(c,x,dn){if(c.after)return false;if(c.cyc)return dn>=c.f&&dn<=c.t&&((dn-c.f)%10)<4;if(c.win)return dn>=c.f&&dn<=c.t+3&&!careDone(x.id,c.k);return dn>=c.f&&dn<=c.t}
-function careToday(x){var dn=careDay(x),r=CARE.filter(function(c){return careDue(c,x,dn)});CARE.forEach(function(c){if(c.after){var d=careDone(x.id,c.after);if(d&&diff(today(),d.date)===1)r.push(c)}});return r}
-function careTomorrow(x){var dn=careDay(x)+1,r=CARE.filter(function(c){return !c.after&&(c.win?(dn===c.f&&!careDone(x.id,c.k)):careDue(c,x,dn))});CARE.forEach(function(c){if(c.after){var d=careDone(x.id,c.after);if(d&&diff(today(),d.date)===0)r.push(c)}});return r}
-function careBatches(){var all=db.inc.slice().sort(function(a,b){return a.start<b.start?-1:1});return batchLeft().filter(function(o){var d=careDay(o.x);return o.left>0&&d>=1&&d<=60}).map(function(o){return{x:o.x,n:all.indexOf(o.x)+1,dn:careDay(o.x),left:o.left}})}
-function careMark(b,k){db.cfg=db.cfg||[];db.cfg.push({id:id(),type:"caredone",bid:b,key:k,date:today()});save();draw()}
-function careRow(c,x,dn){var dd=careDone(x.id,c.k),late=c.win&&!dd&&dn>c.t;
- return "<div class='it'><div>"+c.ic+" <b>"+c.h+"</b>"+(late?" <span class='bad'>দেরি হয়েছে</span>":"")+"<small>"+c.d+"</small></div>"+(c.vac?"<div class='act'>"+(dd?"<span class='ok'>✅ দেওয়া হয়েছে</span>":"<button class='s p' onclick='careMark("+x.id+",\""+c.k+"\")'>দেওয়া হয়েছে</button>")+"</div>":"")+"</div>"}
-function careBox(nl){var L=careBatches();if(!L.length)return "";
- return "<h2>🐥 বাচ্চার ওষুধ ও ভ্যাক্সিন (আজ)</h2>"+L.map(function(o){var td=careToday(o.x),tm=careTomorrow(o.x);
-  return "<div class='box'><div class='it' style='border:0;padding:0'><b style='font-size:17px'>ব্যাচ "+bn(o.n)+" · দিন "+bn(o.dn)+"</b><span>"+bn(o.left)+"টি বাচ্চা</span></div>"+
-  (td.length?td.map(function(c){return careRow(c,o.x,o.dn)}).join(""):"<div class='empty'>আজ কোনো ওষুধ বা ভ্যাক্সিন নেই</div>")+
-  "<small style='color:var(--mute)'>আগামীকাল: "+(tm.length?tm.map(function(c){return c.ic+" "+c.h}).join(" · "):"কিছু নেই")+"</small></div>"}).join("")+(nl?"":"<button class='g' onclick='go(\"meds\")'>পুরো তালিকা ও বিস্তারিত দেখুন</button>")}
-function careFull(){var L=careBatches();if(!L.length)return "";
- return "<h2>ওষুধ ও ভ্যাক্সিনের পুরো তালিকা</h2>"+L.map(function(o){var x=o.x,hd=careHd(x);
-  return "<div class='box'><b>ব্যাচ "+bn(o.n)+" · ১ম দিন "+fmt(hd)+" · আজ দিন "+bn(o.dn)+"</b>"+CARE.map(function(c){
-   var dd=careDone(x.id,c.k),on=careDue(c,x,o.dn)||(c.after&&careToday(x).indexOf(c)>=0),days=c.cyc?"দিন ২৫–২৮, ৩৫–৩৮, ৪৫–৪৮, ৫৫–৫৮":"দিন "+bn(c.f)+(c.t>c.f?"–"+bn(c.t):""),dts=c.cyc?"":" · "+fmt(addD(hd,c.f-1))+(c.t>c.f?" থেকে "+fmt(addD(hd,c.t-1)):"");
-   var past=!c.cyc&&o.dn>c.t&&!on,st=dd?"<span class='ok'>✅ "+fmt(dd.date)+"</span> <button class='s' onclick='del(\"cfg\","+dd.id+")'>বাতিল</button>":on?"<span class='bad'>আজ করণীয়</span>":past?"<span style='color:var(--mute)'>শেষ</span>":"";
-   return "<div class='it' style='"+(on?"background:var(--inp);border-radius:8px;padding:8px":"")+"'><div>"+c.ic+" <b>"+c.h+"</b><small>"+days+dts+"</small><small>"+c.d+"</small></div><div class='act'>"+st+"</div></div>"}).join("")+"</div>"}).join("")}
-
-
-/* ---------- ওষুধ ও ভ্যাক্সিন পেজ ---------- */
-function medDue(){var n=0;careBatches().forEach(function(o){n+=careToday(o.x).length});n+=db.med.filter(function(x){return !x.done&&diff(x.date,today())<=0}).length;return n}
-function medBox(){
- var r="<h2>মুরগির (প্যারেন্ট) ওষুধ ও ভিটামিন</h2><div class='box'>"+S("ধরন","my",["ওষুধ","ভিটামিন","টিকা"])+F("নাম","mn","text")+F("কোন দিন দিব","md","date",today())+
- "<div class='row'><div>"+F("কতদিন পর পর (ফাঁকা = একবার)","mr","number","",INT)+"</div><div>"+F("খরচ (৳)","mc","number","",NUM)+"</div></div><button onclick='addMed()'>যোগ করুন</button></div><div class='box'>";
- var t=today(),a2=db.med.slice().sort(function(x,y){return ((x.done?1:0)-(y.done?1:0))||(x.date<y.date?-1:1)});
- if(!a2.length)r+="<div class='empty'>এখনো কিছু যোগ করা হয়নি</div>";
- a2.forEach(function(x){var l=diff(x.date,t),st=x.done?"<span class='ok'>দেওয়া হয়েছে ✓</span>":l<0?"<span class='bad'>"+bn(-l)+" দিন দেরি</span>":l===0?"<span class='bad'>আজ দিন</span>":bn(l)+" দিন পর";
-  r+="<div class='it'><div>"+x.type+": "+esc(x.name)+"<small>"+fmt(x.date)+(x.rep?" · প্রতি "+bn(x.rep)+" দিন":"")+(x.cost?" · "+tk(x.cost):"")+"</small>"+st+"</div><div class='act'>"+(x.done?"":"<button class='s p' onclick='done("+x.id+")'>দিয়েছি</button>")+"<button class='s' onclick='del(\"med\","+x.id+")'>মুছুন</button></div></div>"});
- return r+"</div>"}
-function meds(){
- var cd=(db.cfg||[]).filter(function(c){return c.type==="caredone"}).sort(function(a,b){return a.date<b.date?1:-1}),all=db.inc.slice().sort(function(a,b){return a.start<b.start?-1:1}),nm={};CARE.forEach(function(c){nm[c.k]=c});
- var r="<button class='g' style='margin:0 0 12px' onclick='go(\"home\")'>← হোমে ফিরুন</button><h1>💊 ওষুধ ও ভ্যাক্সিন</h1><div class='sum'><div class='y'><b>"+bn(medDue())+"</b><span>আজ করণীয়</span></div><div><b>"+bn(careBatches().length)+"</b><span>চলমান বাচ্চার ব্যাচ</span></div><div><b>"+bn(cd.length)+"</b><span>ভ্যাক্সিন দেওয়া হয়েছে</span></div><div class='r'><b>"+tk(fin(null).o["ওষুধ/ভিটামিন"]||0)+"</b><span>মুরগির ওষুধের খরচ</span></div></div>";
- r+=(careBox(true)||"<div class='box'><div class='empty'>এখন ওষুধ-ভ্যাক্সিনের জন্য কোনো চলমান বাচ্চার ব্যাচ নেই। বাচ্চা ফুটলে ইনকিউবেটর ট্যাবে সংখ্যা লিখলে এখানে করণীয় আসবে।</div></div>");
- r+=careFull();
- r+="<h2>ব্যবহারের হিসাব (ভ্যাক্সিন দেওয়া)</h2><div class='box'>";
- if(!cd.length)r+="<div class='empty'>এখনো কোনো ভ্যাক্সিন “দেওয়া হয়েছে” চিহ্ন দেওয়া হয়নি</div>";
- cd.forEach(function(c){var b=all.filter(function(x){return x.id===c.bid})[0],c2=nm[c.key]||{h:c.key,ic:"💉"};r+="<div class='it'><div>"+c2.ic+" <b>"+c2.h+"</b><small>"+fmt(c.date)+" · ব্যাচ "+bn(all.indexOf(b)+1)+(b?" ("+fmt(b.start)+")":"")+"</small></div><div class='act'><button class='s' onclick='del(\"cfg\","+c.id+")'>মুছুন</button></div></div>"});
- r+="</div><h2>আপনার নিয়ম (বিস্তারিত, ১ম থেকে ৬০ দিন)</h2><div class='box'>"+CARE.map(function(c){var days=c.cyc?"দিন ২৫–২৮, ৩৫–৩৮, ৪৫–৪৮, ৫৫–৫৮":c.after?"রানীক্ষেত ২য় ডোজের পরদিন":"দিন "+bn(c.f)+(c.t>c.f?"–"+bn(c.t):"");return "<div class='it'><div>"+c.ic+" <b>"+c.h+"</b><small>"+days+(c.win?" (যেকোনো ১ দিন)":"")+"</small><small>"+c.d+"</small></div></div>"}).join("")+"</div>";
- return r+medBox();
+ var inv=parentVal()+assetTotal()+costTotal(),h="<h2>মোট হিসাব</h2><div class='grid'>"+kpi("",tk(inv),"মোট ইনভেস্ট")+kpi("",tk(assetTotal()),"এসেট (এককালীন)")+kpi("",tk(parentVal()),"প্যারেন্টস মূল্য")+kpi("",tk(costTotal()),"মোট খরচ")+"</div>";
+ h+="<h2>খরচের ভাগ</h2><div class='card'>";
+ D.costs.forEach(function(c){h+="<div class='row'><div>"+c.c+"</div><b>"+tk(c.a)+"</b></div>"});
+ h+="</div><h2>ধার</h2><div class='card'><div class='row'><div>"+D.loans.who+" থেকে পাওনা</div><span class='pill'>"+tk(D.loans.get)+"</span></div></div>";
+ return h;
 }
 
-
-/* ---------- সাজেশন বক্স ---------- */
-
-function eggsOn(d){return sum(db.eggs.filter(function(x){return x.date===d&&!x.open}),function(x){return (x.seed||0)+(x.table||0)})}
-function eggDays(n,skip){var t=today(),out=[],k=skip?1:0,g=0;while(out.length<n&&g<40){var d=addD(t,-k);if(db.eggs.some(function(x){return x.date===d&&!x.open}))out.push(eggsOn(d));k++;g++}return out}
-function avgOf(a){return a.length?sum(a,function(x){return x})/a.length:0}
-function layersN(){return sum(db.flock.filter(function(g){var a=ageNow(g);return g.type==="মুরগি"&&(a==null||a>=6)}),function(g){return g.n})}
-function sug(){
- var t=today(),S=[],hens=birds("মুরগি"),roos=birds("মোরগ"),hr=new Date().getHours(),mo=new Date().getMonth()+1,e7=eggDays(7,true),a7=avgOf(e7),todayRec=db.eggs.some(function(x){return x.date===t&&!x.open}),te=eggsOn(t),
- gpb=birds()?autoKg()*1000/birds():0,ap=feedAvgPrice(),fpd=feedPerDay(),eg=rt("egg",20),lay=layersN(),
- newG=db.flock.filter(function(g){return g.id>100&&g.n>0&&diff(t,g.asOf)>=0&&diff(t,g.asOf)<=14});
- var VIT=["ভিটামিন AD3E ও ক্যালসিয়াম সাপ্লিমেন্ট পানিতে (লেবেলের মাত্রা অনুযায়ী ৩–৫ দিন)","গরম বা স্ট্রেসের সময় ইলেকট্রোলাইট + ভিটামিন সি","নতুন মুরগি আনলে ২–৩ দিন স্ট্রেস ভিটামিন বা ভিটামিন সি"];
- if(!todayRec)S.push({t:"info",h:"আজকের ডিম এখনো লেখা হয়নি",b:"ডিম সংগ্রহ করে ডিম ট্যাবে লিখুন। সন্ধ্যায় আরেকবার গুনে নিলে হিসাব ঠিক থাকে।"});
- else if(a7>=5){var r=te/a7;
-  if(r<0.75){var why=[],todo=["সব বাসা, ঝোপ ও কোণা খুঁজে দেখুন, মুরগি অন্য জায়গায় ডিম পাড়ছে কি না","সন্ধ্যায় আরেকবার ডিম গুনে অ্যাপে ঠিক করুন"+(hr<17?" (এখন দিনের শেষ হয়নি, সংখ্যা বাড়তে পারে)":""),"পানি পরিষ্কার ও ঠান্ডা আছে কি না, খাবার ঠিকমতো দেওয়া হয়েছে কি না দেখুন","২–৩ দিন দেখুন। কমতেই থাকলে, বা ঝিমানো/কাশি/পাতলা খোসার ডিম দেখলে পশু চিকিৎসকের সাথে কথা বলুন"];
-   if(newG.length)why.push("নতুন মুরগি/মোরগ যোগ হয়েছে ("+newG.map(function(g){return g.type+" "+bn(g.n)+"টি, "+bn(diff(t,g.asOf))+" দিন আগে"}).join("; ")+"), নতুন পরিবেশে স্ট্রেসে ডিম কমে");
-   if(gpb&&gpb<70)why.push("খাবার কম: প্রতি মুরগি/মোরগ প্রায় "+bn(gpb)+" গ্রাম/দিন");
-   if(roos&&hens/roos<6)why.push("মোরগ বেশি (১টি মোরগে "+bn(hens/roos)+"টি মুরগি), মারামারি ও চাপ হয়");
-   if(mo>=11||mo<=1)why.push("শীতে দিন ছোট হয়, আলো কমলে ডিম কমে");
-   why.push("আবহাওয়া হঠাৎ বদলানো (গরম বা ঠান্ডা)","ভয়, শব্দ, কুকুর-শিয়ালের উপদ্রব বা ভিড়","কিছু মুরগি ডিমে বসে আছে (broody) বা পালক ঝরছে","পানি কম বা নোংরা, খাবারের মান কমে যাওয়া","অসুখের শুরু, যেমন ঝিমানো, কাশি, পাতলা খোসা");
-   S.push({t:"bad",h:"আজ ডিম কম: "+bn(te)+"টি (গত "+bn(e7.length)+" দিনের গড় "+bn(a7)+"টি)",why:why,todo:todo,vit:VIT})}
-  else if(r>1.2)S.push({t:"ok",h:"আজ ডিম বেশি: "+bn(te)+"টি (গড় "+bn(a7)+"টি)",b:"যা ভালো কাজ করছে (খাবার, পানি, পরিবেশ) সেটা বজায় রাখুন।"});
-  else S.push({t:"ok",h:"আজকের ডিম স্বাভাবিক: "+bn(te)+"টি (গড় "+bn(a7)+"টি)"})}
- if(hens&&e7.length){var base=lay||hens,pr=a7/base*100,young=hens-lay;
-  S.push({t:pr<25?"warn":"info",h:"ডিম পাড়ার হার ≈ "+bn(pr)+"% ("+bn(a7)+" ডিম ÷ "+bn(base)+" মুরগি)",b:"দেশি মুরগিতে সাধারণত ৩০–৪০% ধরা হয়। আপনার নিজের গড়ই আসল মাপকাঠি। "+(young>0?bn(young)+"টি মুরগির বয়স ৬ মাসের কম, এগুলো এখনো পুরো ডিম নাও দিতে পারে, তাই হার আরও কম দেখাচ্ছে। ":"")+(pr<25?"হার কম, খাবার, পানি, আলো ও মোরগের সংখ্যা দেখুন।":"")})}
- if(birds()&&autoKg()){
-  if(gpb<70)S.push({t:"warn",h:"খাবার কম: প্রতি মুরগি/মোরগ ≈ "+bn(gpb)+" গ্রাম/দিন",b:"দেশি মুরগির জন্য সাধারণত ৮০–১০০ গ্রাম লাগে (খোলা জায়গায় চরলে কম লাগে)। খাবার কম হলে ডিম ও ওজন দুটোই কমে।",todo:["অটো খাবার বাড়ানোর কথা ভাবুন, ৮৫ গ্রাম ধরলে দিনে প্রায় "+bn(birds()*0.085)+" কেজি"]});
-  else if(gpb>120)S.push({t:"info",h:"খাবার বেশি হতে পারে: প্রতি মুরগি/মোরগ ≈ "+bn(gpb)+" গ্রাম/দিন",b:"নষ্ট বা ফেলে যাচ্ছে কি না দেখুন, বেশি হলে খরচ বাড়ে।"});
-  else S.push({t:"ok",h:"খাবারের পরিমাণ ঠিক আছে: প্রতি মুরগি/মোরগ ≈ "+bn(gpb)+" গ্রাম/দিন"})}
- if(a7>0&&fpd&&ap){var cpe=fpd*ap/a7;
-  S.push({t:cpe>eg?"warn":"ok",h:"প্রতি ডিমে খাবার খরচ ≈ "+tk(cpe)+" (ডিমের রেট "+tk(eg)+")",b:cpe>eg?"ডিমের দামের চেয়ে খাবারের খরচ বেশি পড়ছে।":"ডিমের দাম খাবারের খরচের চেয়ে বেশি, ঠিক আছে।",todo:cpe>eg?["কম ডিম দেওয়া বা পাড়া বন্ধ মুরগি বেছে বিক্রির কথা ভাবুন","বাড়তি মোরগ থাকলে বিক্রি করলে খাবার বাঁচে","খাবারের মিশ্রণ বা দাম দেখুন (সবজি, স্থানীয় খাবার যোগ করা যায়)"]:null})}
- if(fpd>0&&feedLeft()>0){var dl=feedLeft()/fpd;if(dl<=5)S.push({t:"bad",h:"খাবার প্রায় শেষ: আর প্রায় "+bn(Math.floor(dl))+" দিনের",b:"১০ দিনের জন্য প্রায় "+bn(fpd*10)+" কেজি খাবার লাগবে।",todo:["খাবার বানান বা কিনুন, আর খাবার ট্যাবে কেজি ও দাম লিখুন"]})}
- if(roos&&hens&&hens/roos<6)S.push({t:"warn",h:"মোরগ বেশি: ১টি মোরগে "+bn(hens/roos)+"টি মুরগি",b:"সাধারণত ১টি মোরগে ৮–১০টি মুরগি ভালো। বেশি মোরগ থাকলে মারামারি, মুরগির স্ট্রেস ও খাবার খরচ বাড়ে।",todo:["বাড়তি মোরগ বিক্রি করলে খাবার বাঁচে (আপনার রেট "+tk(rt("kg"))+"/কেজি)"]});
- if(newG.length)S.push({t:"info",h:"নতুন মুরগি/মোরগ এসেছে",b:newG.map(function(g){return g.type+" "+bn(g.n)+"টি ("+bn(diff(t,g.asOf))+" দিন আগে)"}).join(", ")+"। নতুন জায়গায় ৭–১৪ দিন ডিম কম হতে পারে, এটা স্বাভাবিক।",vit:[VIT[2]]});
- var lastW=db.wt.length?db.wt.map(function(x){return x.date}).sort().pop():null;
- if(!lastW)S.push({t:"info",h:"মুরগির ওজন এখনো মাপা হয়নি",b:"ওজন ট্যাবে কয়েকটি মেপে লিখলে ওজনের হিসাব ও মূল্য ঠিক আসবে।"});
- else if(diff(t,lastW)>=14)S.push({t:"warn",h:"ওজন মাপার সময় হয়েছে (শেষ মাপ "+bn(diff(t,lastW))+" দিন আগে)",b:"১৪ দিন পর পর মাপলে ওজন বাড়ছে না কমছে বোঝা যায়।"});
- db.flock.forEach(function(g){var l=wlog("f:"+g.id);if(l.length>1){var a=l[l.length-1],b=l[l.length-2];if(a.avg<b.avg*0.95)S.push({t:"warn",h:"ওজন কমেছে: "+g.type+(ageNow(g)!=null?" "+bn(ageNow(g))+" মাসের":"")+" ("+wkg(b.avg)+" → "+wkg(a.avg)+")",b:"খাবার, পানি, কৃমি বা রোগের কারণ হতে পারে।",todo:["খাবারের পরিমাণ ও মান মিলান","মুরগির পায়খানা ও আচরণ দেখুন, সন্দেহ হলে পশু চিকিৎসকের সাথে কথা বলুন"],vit:["মাল্টিভিটামিন; কৃমিনাশক শেষ কবে দিয়েছেন মিলান"]})}});
- wtargets().filter(function(o){return o.id.indexOf("b:")===0}).forEach(function(o){var l=wlog(o.id);if(l.length>1){var a=l[l.length-1],b=l[l.length-2],dd=diff(a.date,b.date);if(dd>0&&(a.avg-b.avg)/dd*1000<5)S.push({t:"warn",h:"বাচ্চার ওজন কম বাড়ছে: "+o.l,b:"দিনে "+bn(Math.max(0,(a.avg-b.avg)/dd*1000))+" গ্রাম করে বাড়ছে।",todo:["খাবার ও পানি, ব্রুডিংয়ের তাপমাত্রা দেখুন","ভ্যাক্সিন ও ওষুধের তালিকা ঠিকমতো দেওয়া হয়েছে কি না মিলান"],vit:["অ্যামাইনোভিট প্লাস (আপনার নিয়মে ২৫ দিন থেকে, শুধু রাতে)"]})}});
- var hb=db.inc.filter(function(x){return x.hatched!=null&&x.count}).sort(function(a,b){return a.start<b.start?-1:1});
- if(hb.length){var lb=hb[hb.length-1],hrate=lb.hatched/lb.count*100,fert=(lb.count-cd(lb).clear)/lb.count*100;
-  if(hrate<70)S.push({t:"warn",h:"শেষ ব্যাচের হ্যাচ রেট কম: "+bn(hrate)+"%",b:"উর্বরতা "+bn(fert)+"%।",why:["বীজ ডিম ৭ দিনের বেশি পুরোনো ছিল","তাপমাত্রা বা আর্দ্রতা ঠিক ছিল না, বিদ্যুৎ গেছে","ডিম ঘোরানো ঠিকমতো হয়নি","মোরগের সংখ্যা বা স্বাস্থ্য, ডিম ফাটা"],todo:["বীজ ডিম ৭ দিনের মধ্যে বসান","সেটিং "+bn(TEMP)+"° ও আর্দ্রতা ৬০% (শেষ ৪ দিন ৭০%) ঠিক আছে কি না দেখুন"]});
-  else S.push({t:"ok",h:"শেষ ব্যাচের হ্যাচ রেট ভালো: "+bn(hrate)+"%"})}
- var o=oldestSeed();if(o&&diff(t,o)>7)S.push({t:"warn",h:"বীজ ডিম "+bn(diff(t,o))+" দিনের পুরোনো",b:"৭ দিনের বেশি রাখলে হ্যাচ রেট কমে।",todo:["দ্রুত ইনকিউবেটরে দিন"]});
- else if(seedStock()>0){var sp=seedPerDay();if(sp>0){var need=Math.max(0,200-seedStock());S.push({t:"info",h:"বীজ ডিম মজুদ "+bn(seedStock())+"টি",b:"দিনে প্রায় "+bn(sp)+"টি জমছে। ২০০টি হতে প্রায় "+bn(Math.ceil(need/sp))+" দিন লাগবে।"})}}
- var dead=sum(db.chk.filter(function(x){return x.kind==="die"}),function(x){return x.n}),hat=sum(db.inc,function(x){return x.hatched||0});
- if(hat>0&&dead/hat>0.05)S.push({t:"warn",h:"বাচ্চার মৃত্যু বেশি: "+bn(dead)+"টি ("+bn(dead/hat*100)+"%)",why:["ব্রুডিংয়ে তাপমাত্রা ঠিক না (বেশি গরম বা ঠান্ডা)","পানি নোংরা বা কম, ঘর স্যাঁতসেঁতে","ওষুধ-ভ্যাক্সিন সময়মতো দেওয়া হয়নি"],todo:["ওষুধ-ভ্যাক্সিন পেজে তালিকা মিলান","মৃত বাচ্চার লক্ষণ দেখে পশু চিকিৎসকের পরামর্শ নিন"]});
- var lm=db.med.filter(function(x){return x.done}).map(function(x){return x.date}).sort().pop();
- if(!lm||diff(t,lm)>45)S.push({t:"info",h:"মুরগিকে ভিটামিন বা ওষুধ শেষ দেওয়া "+(lm?bn(diff(t,lm))+" দিন আগে":"অ্যাপে লেখা নেই"),b:"নিয়মিত ভিটামিন ও কৃমিনাশকের সময় হলে ওষুধ পেজে তারিখসহ যোগ করুন, অ্যাপ মনে করিয়ে দেবে।"});
- if(mo>=11||mo<=2)S.push({t:"info",h:"শীতের সতর্কতা",b:"ঠান্ডা বাতাস আটকান, রাতে ঘর ঢেকে রাখুন, বাচ্চার ব্রুডিংয়ে তাপ ঠিক রাখুন। শীতে ডিম কিছুটা কমতে পারে।",vit:["ভিটামিন সি ও AD3E"]});
- else if(mo>=3&&mo<=6)S.push({t:"info",h:"গরমের সতর্কতা",b:"ছায়া ও ঠান্ডা পানি নিশ্চিত করুন। গরমে খাবার কম খায়, ডিম ও ওজন কমে।",vit:["ইলেকট্রোলাইট ও ভিটামিন সি"]});
- else S.push({t:"info",h:"বর্ষার সতর্কতা",b:"ঘর শুকনো রাখুন, বিছানা ভিজলে বদলান। স্যাঁতসেঁতে থাকলে রোগ বাড়ে।"});
- var ord={bad:0,warn:1,info:2,ok:3};return S.sort(function(a,b){return ord[a.t]-ord[b.t]})}
-function sugCard(x){var col=x.t==="bad"?"var(--red)":x.t==="warn"?"var(--yolk)":x.t==="ok"?"var(--ac)":"var(--mute)",ic={bad:"🔴",warn:"🟠",ok:"🟢",info:"ℹ️"}[x.t];
- function L(t,a){return a&&a.length?"<div style='margin-top:6px'><b>"+t+"</b><small style='display:block;color:var(--mute)'>"+a.map(function(z){return "• "+z}).join("<br>")+"</small></div>":""}
- return "<div class='box' style='border-left:5px solid "+col+"'><b>"+ic+" "+x.h+"</b>"+(x.b?"<small style='display:block;color:var(--mute)'>"+x.b+"</small>":"")+L("সম্ভাব্য কারণ:",x.why)+L("কী করবেন:",x.todo)+(x.vit?L("ভিটামিন / ওষুধ (সাধারণ পরামর্শ):",x.vit)+"<small style='display:block;color:var(--mute)'>মাত্রা লেবেল বা পশু চিকিৎসকের কথা মতো দেবেন। লক্ষণ না দেখে অ্যান্টিবায়োটিক দেবেন না।</small>":"")+"</div>"}
-function tipsBox(){var a=sug().filter(function(x){return x.t==="bad"||x.t==="warn"}).slice(0,3);
- return "<h2>💡 সাজেশন</h2><div class='box'>"+(a.length?a.map(function(x){return "<div class='it'><div>"+({bad:"🔴",warn:"🟠"})[x.t]+" <b>"+x.h+"</b></div></div>"}).join(""):"<div class='empty'>আজ বড় কোনো সমস্যা ধরা পড়েনি ✓</div>")+"<button class='o' onclick='go(\"tips\")'>সব সাজেশন ও কারণ-করণীয় দেখুন</button></div>"}
-function farmSummary(){var t=today(),L=["আজ: "+t+" (বাংলাদেশ)","প্যারেন্ট মুরগি "+birds("মুরগি")+"টি, মোরগ "+birds("মোরগ")+"টি"];
- db.flock.forEach(function(g){if(g.n){var a=ageNow(g),w=wlatest("f:"+g.id);L.push("- "+g.type+" "+g.n+"টি"+(a!=null?", বয়স "+a+" মাস":"")+(w?", গড় ওজন "+w.toFixed(2)+" কেজি":"")+(g.id>100&&diff(t,g.asOf)<=14?", নতুন এসেছে "+diff(t,g.asOf)+" দিন আগে":""))}});
- var ed=[];for(var i=9;i>=0;i--){var d=addD(t,-i);if(db.eggs.some(function(x){return x.date===d&&!x.open}))ed.push(d.slice(5)+": "+eggsOn(d))}
- L.push("দিনের ডিম সংগ্রহ (সর্বশেষ ১০ দিন): "+(ed.join(", ")||"নেই"));
- L.push("অটো খাবার "+autoKg()+" কেজি/দিন; মজুদ "+feedLeft().toFixed(1)+" কেজি; খাবারের দাম "+Math.round(feedAvgPrice())+" ৳/কেজি");
- L.push("ডিমের রেট "+rt("egg",20)+" ৳, মুরগির কেজি রেট "+rt("kg")+" ৳");
- db.inc.forEach(function(x){L.push("- ব্যাচ শুরু "+x.start+": "+x.count+"টি ডিম"+(x.hatched!=null?", ফুটেছে "+x.hatched:", চলছে")+(x.cands&&x.cands.length?", বাওয়া "+cd(x).clear+", নষ্ট "+cd(x).rot+", ভাঙা "+cd(x).broken:""))});
- L.push("বাচ্চা মজুদ "+chickStock()+"টি, মৃত বাচ্চা "+sum(db.chk.filter(function(x){return x.kind==="die"}),function(x){return x.n})+"টি");
- return L.join("\n")}
-function tips(){
- var e7=eggDays(7,false),a7=avgOf(e7),hens=birds("মুরগি"),lay=layersN()||hens,gpb=birds()?autoKg()*1000/birds():0,fpd=feedPerDay(),ap=feedAvgPrice();
- var r="<h1>💡 সাজেশন বক্স</h1><div class='sum'><div class='y'><b>"+bn(a7)+"টি</b><span>দিনে ডিম (গত "+bn(e7.length)+" দিনের গড়)</span></div><div><b>"+(lay&&a7?bn(a7/lay*100)+"%":"—")+"</b><span>ডিম পাড়ার হার</span></div><div><b>"+(gpb?bn(gpb)+" গ্রাম":"—")+"</b><span>প্রতি মুরগি/মোরগ খাবার</span></div><div><b>"+(a7&&fpd&&ap?tk(fpd*ap/a7):"—")+"</b><span>প্রতি ডিমে খাবার খরচ</span></div></div>";
- r+=sug().map(sugCard).join("");
- 
- return r}
-
-
-/* ---------- আজ করণীয়: করেছি / করিনি ---------- */
-var AL=[];
-function tmark(t){return (db.cfg||[]).filter(function(c){return c.type==="tdone"&&c.date===today()&&c.txt===t})[0]}
-function alertsBox(al){
- var t=today(),texts=al.map(function(a){return typeof a==="string"?a:a.t});
- (db.cfg||[]).filter(function(c){return c.type==="tdone"&&c.st==="no"&&diff(t,c.date)===1}).forEach(function(c){var tx="⚠️ গতকাল করেননি: "+c.txt;if(texts.indexOf(c.txt)<0&&!tmark(tx)&&texts.indexOf(tx)<0){al.push({t:tx,act:c.act});texts.push(tx)}});
- AL=al.map(function(a){return typeof a==="string"?{t:a}:a});
- var dn=AL.filter(function(a){var m=tmark(a.t);return m&&m.st==="done"}).length;
- return "<div class='box"+(AL.length?" warn":"")+"'>"+(AL.length?"<small style='color:var(--mute)'>করেছি "+bn(dn)+" / "+bn(AL.length)+"</small>":"")+AL.map(function(a,i){var m=tmark(a.t);
-  if(m&&m.st==="done")return "<div class='it' style='opacity:.65'><div class='ok'>✅ "+a.t+"</div><div class='act'><button class='s' onclick='tundo("+i+")'>বাতিল</button></div></div>";
-  return "<div class='it'><div class='bad'>"+(m?"❌ ":"")+a.t+(m?"<small>করেননি বলে রাখা আছে</small>":"")+"</div><div class='act'><button class='s p' onclick='tmk("+i+",\"done\")'>করেছি</button>"+(m?"":"<button class='s' onclick='tmk("+i+",\"no\")'>করিনি</button>")+"</div></div>"}).join("")+(AL.length?"":"<div class='empty'>জরুরি কিছু নেই ✓</div>")+"</div>"}
-function tmk(i,st){var a=AL[i];if(!a)return;db.cfg=(db.cfg||[]).filter(function(c){return !(c.type==="tdone"&&(c.date===today()&&c.txt===a.t||diff(today(),c.date)>10))});
- db.cfg.push({id:id(),type:"tdone",date:today(),txt:a.t,st:st,act:a.act||null});
- if(st==="done"&&a.act){var x=a.act;if(x.care&&x.vac&&!careDone(x.care,x.k))db.cfg.push({id:id(),type:"caredone",bid:x.care,key:x.k,date:today()});
-  if(x.med){var m=db.med.filter(function(z){return z.id===x.med&&!z.done})[0];if(m){m.done=true;if(m.rep)db.med.push({id:id(),type:m.type,name:m.name,date:addD(today(),m.rep),rep:m.rep,cost:m.cost,done:false})}}}
- if(st==="done"&&a.act&&a.act.goinc){tab="inc";panel=null;alert("ইনকিউবেটর ট্যাবে নতুন ব্যাচ যোগ করুন (ডিমের সংখ্যা ও তারিখ দিয়ে)")}
- save();draw()}
-function tundo(i){var a=AL[i];if(!a)return;db.cfg=(db.cfg||[]).filter(function(c){return !(c.type==="tdone"&&c.date===today()&&c.txt===a.t)});save();draw()}
-
-var LOGO="logo-256.png";
-/* ---------- লগইন ---------- */
-var USERS={"sifat":"3bdfc851adb2745c79553113d721770eed82d1247c4d2e2804628c69b51185a8","sagor":"063d741a78f88f0af388fb4846f29c5401eb261485f4d9ff3f4d25c569c7333e"},NAMES={"sifat":"Sifat","sagor":"Sagor"},ME="",AUTH=false;
-(function(){try{var a=(localStorage.getItem("sa_auth")||"").split(":");if(USERS[a[0]]&&USERS[a[0]]===a[1]){AUTH=true;ME=a[0]}}catch(e){}})();
-function sha(t){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return("0"+x.toString(16)).slice(-2)}).join("")})}
-function loginHtml(){return "<div style='text-align:center;color:#fff;padding:56px 10px'><img src='logo-256.png' alt='' style='width:120px;height:120px;border-radius:50%'><h1 style='margin:14px 0 4px;font-size:26px'>স্বদেশী এগ্রো</h1><div style='color:var(--sub);margin-bottom:22px'>100% Organic &amp; Pure</div><div style='background:var(--card);color:var(--ink);border-radius:12px;padding:14px;max-width:320px;margin:0 auto;text-align:left'>"+F("ইউজারনেম","lgu","text","","autocomplete=username autocapitalize=off autocorrect=off")+F("পাসওয়ার্ড","lgp","password","","autocomplete=current-password")+"<button onclick='dologin()'>ঢুকুন</button></div></div>"}
-function dologin(){var u=v("lgu").trim().toLowerCase(),p=v("lgp");if(!u||!p)return toast("ইউজারনেম ও পাসওয়ার্ড দিন");if(!window.crypto||!crypto.subtle)return toast("এই ব্রাউজারে লগইন চলবে না, Chrome বা Safari দিয়ে খুলুন");sha("swadeshi-agro|"+u+"|"+p).then(function(h){if(USERS[u]&&USERS[u]===h){ME=u;try{localStorage.setItem("sa_auth",u+":"+h)}catch(e){}AUTH=true;draw()}else toast("ইউজারনেম বা পাসওয়ার্ড ভুল হয়েছে")})}
-function lo(){try{localStorage.removeItem("sa_auth")}catch(e){}AUTH=false;ME="";draw()}
-document.addEventListener("keydown",function(e){if(e.key==="Enter"&&!AUTH&&document.getElementById("lgu"))dologin()});
-function draw(){
- pendDraw=false;
- if(!AUTH){document.getElementById("nav").innerHTML="";document.getElementById("app").innerHTML=loginHtml();return}
- var T=[["home","🏠","হোম"],["eggs","🥚","ডিম"],["inc","🔌","ইনকিউবেটর"],["chicks","🐥","বাচ্চা"],["flock","🐓","মুরগি"],["wt","⚖️","ওজন"],["feed","🌾","খাবার"],["money","💰","হিসাব"],["rates","📈","রেট"]];
- document.getElementById("nav").innerHTML=T.map(function(x){return "<a href='javascript:void(0)' class='"+(x[0]===tab?"on":"")+"' onclick='go(\""+x[0]+"\")'>"+x[1]+"<br>"+x[2]+"</a>"}).join("");
- var on=document.querySelector("nav a.on"),nv=document.getElementById("nav");if(on)nv.scrollLeft=on.offsetLeft-nv.clientWidth/2+on.clientWidth/2;
- document.getElementById("app").innerHTML="<div class='hd'><img src='"+LOGO+"' alt=''><div><b>স্বদেশী এগ্রো</b><span>100% Organic &amp; Pure</span><br><span>👤 "+(NAMES[ME]||ME)+" · <a href='javascript:void(0)' onclick='lo()' style='color:var(--sub);text-decoration:underline'>লগআউট</a></span><br><span id='syn'>"+synTxt()+"</span></div></div>"+(NOTICE?"<div class='box warn bad'>"+NOTICE+"</div>":"")+({home:home,eggs:eggs,inc:inc,chicks:chicks,flock:flock,wt:wt,feed:feed,money:money,rates:ratesTab,meds:meds,tips:tips})[tab]();
+/* ---------- এসেট ---------- */
+function assets(){
+ var h="<h2>এসেট <small>এককালীন ভালো আছে এমন জিনিস</small></h2><div class='card'>";
+ D.assets.forEach(function(a){h+="<div class='row'><div>"+a[0]+"</div><b>"+tk(a[1])+"</b></div>"});
+ return h+"<div class='row'><b>মোট এসেট</b><b>"+tk(assetTotal())+"</b></div></div>";
 }
-var R=null,ready=false,pendDraw=false,NOTICE="",COLS=["eggs","esale","inc","chk","med","feed","led","wt","cfg","flock"];
-function busy(){var a=document.activeElement,app=document.getElementById("app");if(a&&app.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))return true;return Array.prototype.some.call(app.querySelectorAll("input,textarea"),function(e){return e.value!==e.defaultValue})}
-function softDraw(){if(busy())pendDraw=true;else draw()}
-setInterval(function(){if(pendDraw&&!busy()){pendDraw=false;draw()}},2500);
 
-/* ---------- অটো ব্যাকআপ ---------- */
-var bkT,BKC=[],BKV=[],lastBk="";
-function LB(){try{return JSON.parse(localStorage.getItem("khamar_bk3")||"[]")}catch(e){return[]}}
-function total(){return COLS.reduce(function(t,k){return t+(db[k]||[]).length},0)}
-function doBk(){var s=JSON.stringify(db);if(s===lastBk)return;lastBk=s;var t=Date.now(),n=total();
- try{var a=LB();a.unshift({t:t,n:n,s:s});localStorage.setItem("khamar_bk3",JSON.stringify(a.slice(0,8)))}catch(e){}
- }
-function autoBk(){clearTimeout(bkT);bkT=setTimeout(doBk,2500)}
-function fdt(t){return new Date(t).toLocaleString("bn-BD",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"})}
-function bkBox(){
- var a=[];BKC.forEach(function(x){a.push({t:x.t,n:x.n})});LB().forEach(function(x){a.push({t:x.t,n:x.n})});
- a.sort(function(x,y){return y.t-x.t});
- return "<h2>অটো ব্যাকআপ</h2><div class='box'><b class='ok'>✓ চালু আছে</b><small>প্রতিটি এন্ট্রির কয়েক সেকেন্ড পর নিজে কপি তৈরি হয়। এই ফোনে সর্বশেষ ৮টি কপি থাকে। ডাটা শুধু এই ফোনেই থাকে, তাই মাঝে মাঝে নিজে কপি করে Notes/WhatsApp-এ রাখুন।"+(a[0]?"<br>শেষ কপি: "+fdt(a[0].t)+" · "+bn(a[0].n)+"টি এন্ট্রি":"<br>এখনো কোনো কপি হয়নি")+"</small><button class='g' onclick='bk()'>নিজে কপি করে রাখুন (Notes/WhatsApp)</button></div>"}
+/* ---------- প্যারেন্টস ---------- */
+function parent(){
+ var h="<h2>প্যারেন্টস <small>মোট "+bn(birds())+"টি</small></h2><div class='card'>";
+ D.parents.forEach(function(p){h+="<div class='row'><div>"+p.t+"<small>"+bn(p.n)+"টি × "+tk(p.p)+"</small></div><b>"+tk(p.n*p.p)+"</b></div>"});
+ return h+"<div class='row'><b>মোট মূল্য</b><b>"+tk(parentVal())+"</b></div></div>";
+}
 
-mig();
-if(!db.m1){db.m1=1;
- db.eggs.push({id:id(),date:"2026-10-25",seed:241,table:0,seedBad:0});
- db.inc.push({id:id(),name:"২৫ অক্টোবর ব্যাচ",count:241,days:21,start:"2026-10-25",cands:[{clear:31,rot:0,broken:0,date:"2026-10-31"}],tr:null,hatched:null});
- db.esale.push({id:id(),date:"2026-10-31",n:31,price:20,bad:0});save()}
-draw();
-seed2();seed3();BOOT=false;draw();startSync();
-if("serviceWorker" in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
+var R={home:home,meat:meat,chick:chick,egg:egg,feed:feed,med:med,money:money,assets:assets,parent:parent};
+
+function renderNav(){
+ document.getElementById("nav").innerHTML=TABS.map(function(x){return "<button class='"+(x[0]===TAB?"on":"")+"' onclick=\"go('"+x[0]+"')\"><span class='ic'>"+x[1]+"</span>"+x[2]+"</button>"}).join("");
+}
+function renderTab(){document.getElementById("app").innerHTML=R[TAB]();renderNav()}
+function go(t){TAB=t;renderTab();window.scrollTo(0,0)}
+document.getElementById("dateTxt").textContent=dt(today()).toLocaleDateString("bn-BD",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+renderTab();
 </script>
 </body>
 </html>
