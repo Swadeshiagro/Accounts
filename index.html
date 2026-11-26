@@ -363,7 +363,7 @@ var MD=null;
 function ask(t,f,cb,ok){MD={t:t,f:f||[],cb:cb,ok:ok||"ঠিক আছে"};dm()}
 function dm(){var m=document.getElementById("modal");if(!m){m=document.createElement("div");m.id="modal";document.body.appendChild(m)}
  if(!MD){m.innerHTML="";return}
- m.innerHTML="<div class='ov'><div class='sheet'><b>"+MD.t+"</b>"+MD.f.map(function(f,i){return f.type==="area"?"<label>"+f.l+"</label><textarea id='mf"+i+"'>"+esc(f.d||"")+"</textarea>":f.type==="date"?F(f.l,"mf"+i,"date",f.d||today(),""):f.type==="text"?F(f.l,"mf"+i,"text","","autocomplete=off"):f.type==="pass"?F(f.l,"mf"+i,"password","","inputmode=numeric autocomplete=off"):F(f.l,"mf"+i,"number",f.d,"min=0 step=any inputmode=decimal")}).join("")+"<div class='row'><button class='g' onclick='mx()'>বাতিল</button><button onclick='mok()'>"+MD.ok+"</button></div></div></div>";
+ m.innerHTML="<div class='ov'><div class='sheet'><b>"+MD.t+"</b>"+MD.f.map(function(f,i){return f.type==="sel"?"<label>"+f.l+"</label><select id='mf"+i+"'>"+f.opts.map(function(o){return "<option value='"+o[0]+"'"+(String(o[0])===String(f.d)?" selected":"")+">"+o[1]+"</option>"}).join("")+"</select>":f.type==="area"?"<label>"+f.l+"</label><textarea id='mf"+i+"'>"+esc(f.d||"")+"</textarea>":f.type==="date"?F(f.l,"mf"+i,"date",f.d||today(),""):f.type==="text"?F(f.l,"mf"+i,"text","","autocomplete=off"):f.type==="pass"?F(f.l,"mf"+i,"password","","inputmode=numeric autocomplete=off"):F(f.l,"mf"+i,"number",f.d,"min=0 step=any inputmode=decimal")}).join("")+"<div class='row'><button class='g' onclick='mx()'>বাতিল</button><button onclick='mok()'>"+MD.ok+"</button></div></div></div>";
  var e=document.getElementById("mf0");if(e&&e.tagName==="INPUT")e.focus()}
 function mx(){MD=null;dm()}
 function mok(){var m=MD,a=m.f.map(function(f,i){return document.getElementById("mf"+i).value});MD=null;dm();m.cb(a)}
@@ -579,11 +579,15 @@ function inc(){
 
 /* ---------- বাচ্চা ট্যাব: ব্যাচ বাছাই (ড্রপডাউন) ---------- */
 var CB="all";
+/* ব্যাচ বাছা এন্ট্রি আগে সেই ব্যাচ থেকে কাটা হয়। বাকি (পুরোনো, ব্যাচ ছাড়া) সংখ্যা ফেরত দেয় */
+function qOf(o,bid){return bid==null?null:o.filter(function(q){return String(q.x.id)===String(bid)})[0]||null}
+function takeSel(o,recs){var rem=0;recs.forEach(function(k){var n=+k.n||0,q=qOf(o,k.bid);if(q){var t=Math.min(q.left,n);q.left-=t;n-=t}rem+=n});return rem}
 function bStats(){var all=db.inc.slice().sort(function(a,b){return a.start<b.start?-1:1}),
  hb=all.filter(function(x){return x.hatched!=null}).map(function(x){return{x:x,n:all.indexOf(x)+1,hd:bHatch(x),hatched:x.hatched||0,left:x.hatched||0,sold:0,soldAmt:0,dead:0,log:[]}}),
  ch=db.chk.slice().sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:(a.id<b.id?-1:1)});
- ch.forEach(function(k){var rem=k.n;
-  [function(q){return q.left>0&&q.hd<=k.date},function(q){return q.left>0}].forEach(function(f){hb.forEach(function(q){if(rem<=0||!f(q))return;var t=Math.min(q.left,rem);q.left-=t;rem-=t;if(k.kind==="sell"){q.sold+=t;q.soldAmt+=t*(k.price||0)}else q.dead+=t;q.log.push({d:k.date,kind:k.kind,n:t,price:k.price||0})})})});
+ function take(q,k,t){if(t<=0)return;q.left-=t;if(k.kind==="sell"){q.sold+=t;q.soldAmt+=t*(k.price||0)}else q.dead+=t;q.log.push({id:k.id,d:k.date,kind:k.kind,n:t,price:k.price||0,sel:String(k.bid)===String(q.x.id)})}
+ ch.map(function(k){var rem=k.n,q=qOf(hb,k.bid);if(q){var t=Math.min(q.left,rem);take(q,k,t);rem-=t}return{k:k,rem:rem}}).forEach(function(z){var k=z.k,rem=z.rem;
+  [function(q){return q.left>0&&q.hd<=k.date},function(q){return q.left>0}].forEach(function(f){hb.forEach(function(q){if(rem<=0||!f(q))return;var t=Math.min(q.left,rem);take(q,k,t);rem-=t})})});
  return hb}
 function chSel(){var L=bStats(),o="<option value='all'"+(CB==="all"?" selected":"")+">📊 সব ব্যাচ — "+allText(false)+"</option>";
  L.forEach(function(q){o+="<option value='"+q.x.id+"'"+(String(q.x.id)===String(CB)?" selected":"")+">🐥 ব্যাচ "+bn(q.n)+" · "+fmt(q.hd)+" ("+bn(q.left)+"টি জীবিত)</option>"});
@@ -594,11 +598,12 @@ function chickOne(){var q=bStats().filter(function(z){return String(z.x.id)===St
  "<div class='box'><b>ব্যাচ "+bn(q.n)+"</b>"+(x.name?" · "+esc(x.name):"")+"<small>ডিম বসানো: "+fmt(x.start)+" · ফুটেছে: "+fmt(q.hd)+" · বয়স "+bn(age)+" দিন</small><small>"+bn(x.count)+"টি ডিম থেকে "+bn(q.hatched)+"টি বাচ্চা"+(x.count?" · হ্যাচ রেট "+bn(q.hatched/x.count*100)+"%":"")+"</small></div>"+
  "<div class='sum'><div class='y'><b>"+bn(q.left)+"</b><span>জীবিত</span></div><div><b>"+bn(q.hatched)+"</b><span>মোট ফুটেছে</span></div><div><b>"+bn(q.sold)+"</b><span>বিক্রি · "+tk(q.soldAmt)+"</span></div><div class='r'><b>"+bn(q.dead)+"</b><span>মারা গেছে</span></div></div>"+
  "<div class='sum'><div class='r'><b>"+tk(cost)+"</b><span>এই ব্যাচের খরচ</span></div><div class='y'><b>"+(q.hatched?bn(cost/q.hatched)+" ৳":"—")+"</b><span>প্রতি বাচ্চায় খরচ</span></div><div><b>"+tk(q.soldAmt)+"</b><span>বিক্রি থেকে আয়</span></div><div class='"+(pr<0?"r":"")+"'><b class='"+(pr<0?"bad":"ok")+"'>"+(pr<0?"−":"")+tk(Math.abs(pr))+"</b><span>লাভ / ক্ষতি<br>(জীবিত বাচ্চার দাম ধরা হয়নি)</span></div></div>"+
+ (q.left>0?"<div class='row'><button onclick='chk(\"sell\","+x.id+")'>এই ব্যাচ থেকে বিক্রি</button><button class='g' onclick='chk(\"die\","+x.id+")'>এই ব্যাচে মারা গেছে</button></div>":"")+
  "<h2>এই ব্যাচের বিক্রি ও মৃত্যু</h2><div class='box'>";
  var lg=q.log.slice().sort(function(a,b){return a.d<b.d?1:-1});
  if(!lg.length)r+="<div class='empty'>এখনো কোনো বিক্রি বা মৃত্যু নেই</div>";
- lg.forEach(function(k){r+="<div class='it'><div>"+fmt(k.d)+" · "+(k.kind==="sell"?"<span class='ok'>বিক্রি "+bn(k.n)+"টি × "+bn(k.price)+" = "+tk(k.n*k.price)+"</span>":"<span class='bad'>মারা গেছে "+bn(k.n)+"টি</span>")+"</div></div>"});
- r+="</div><small style='color:var(--mute)'>বিক্রি বা মৃত্যু লিখতে, বা মুছতে “সব ব্যাচ” বেছে নিন। পুরোনো ব্যাচ থেকে আগে বাদ ধরা হয়।</small>";
+ lg.forEach(function(k){r+="<div class='it'><div>"+fmt(k.d)+" · "+(k.kind==="sell"?"<span class='ok'>বিক্রি "+bn(k.n)+"টি × "+bn(k.price)+" = "+tk(k.n*k.price)+"</span>":"<span class='bad'>মারা গেছে "+bn(k.n)+"টি</span>")+(k.sel?"":"<small>ব্যাচ বাছা হয়নি (পুরোনো ব্যাচ থেকে ধরা হচ্ছে)</small>")+"</div><div class='act'><button class='s p' onclick='chkMove("+k.id+")'>"+(k.sel?"ব্যাচ বদলান":"ব্যাচ বাছুন")+"</button><button class='s' onclick='del(\"chk\","+k.id+")'>মুছুন</button></div></div>"});
+ r+="</div><small style='color:var(--mute)'>যে ব্যাচ বেছে এন্ট্রি দেবেন, হিসাব সেই ব্যাচ থেকেই কাটা হবে।</small>";
  if(dn>=1)r+=careFull([{x:x,n:q.n,dn:dn,left:q.left}]);
  else r+="<h2>ওষুধ ও ভ্যাক্সিন</h2><div class='box'><div class='empty'>"+"বাচ্চা ফোটার পর থেকে এখানে দেখাবে"+"</div></div>";
  return r}
@@ -607,9 +612,9 @@ function chicks(){
  var sold=sum(db.chk.filter(function(x){return x.kind==="sell"}),function(x){return x.n}),dead=sum(db.chk.filter(function(x){return x.kind==="die"}),function(x){return x.n}),inc0=sum(db.chk.filter(function(x){return x.kind==="sell"}),function(x){return x.n*x.price}),
  r="<h1>🐥 বাচ্চা</h1>"+chSel()+"<div class='sum'><div class='y'><b>"+bn(chickStock())+"</b><span>বাচ্চা মজুদ</span></div><div><b>"+bn(sum(db.inc,function(x){return x.hatched||0}))+"</b><span>মোট ফুটেছে</span></div><div><b>"+bn(sold)+"</b><span>বিক্রি · "+tk(inc0)+"</span></div><div class='r'><b>"+bn(dead)+"</b><span>মারা গেছে</span></div></div>"+
  "<div class='row'><button onclick='chk(\"sell\")'>বাচ্চা বিক্রি</button><button class='g' onclick='chk(\"die\")'>বাচ্চা মারা গেছে</button></div><h2>বিক্রি ও মৃত্যুর তালিকা</h2><div class='box'>";
- var h=db.chk.slice().sort(function(x,y){return x.date<y.date?1:-1});
+ var h=db.chk.slice().sort(function(x,y){return x.date<y.date?1:-1}),BS=bStats();
  if(!h.length)r+="<div class='empty'>এখনো কোনো হিসাব নেই</div>";
- h.forEach(function(x){r+="<div class='it'><div>"+fmt(x.date)+" · "+(x.kind==="sell"?"<span class='ok'>বিক্রি "+bn(x.n)+"টি × "+bn(x.price)+" = "+tk(x.n*x.price)+"</span>":"<span class='bad'>মারা গেছে "+bn(x.n)+"টি</span>")+"</div><div class='act'><button class='s' onclick='del(\"chk\","+x.id+")'>মুছুন</button></div></div>"});
+ h.forEach(function(x){r+="<div class='it'><div>"+fmt(x.date)+" · "+(x.kind==="sell"?"<span class='ok'>বিক্রি "+bn(x.n)+"টি × "+bn(x.price)+" = "+tk(x.n*x.price)+"</span>":"<span class='bad'>মারা গেছে "+bn(x.n)+"টি</span>")+"<small>"+(qOf(BS,x.bid)?bLabel(qOf(BS,x.bid)):"ব্যাচ বাছা হয়নি (পুরোনো ব্যাচ থেকে ধরা হচ্ছে)")+"</small></div><div class='act'><button class='s p' onclick='chkMove("+x.id+")'>"+(qOf(BS,x.bid)?"ব্যাচ বদলান":"ব্যাচ বাছুন")+"</button><button class='s' onclick='del(\"chk\","+x.id+")'>মুছুন</button></div></div>"});
  r+="</div>"+careFull()+"<h2>ফোটার হিসাব</h2>"+bsum();
  var d=db.inc.filter(function(x){return x.hatched!=null});
  if(d.length){r+="<div class='box'>";d.forEach(function(x){var c=cd(x);r+="<div class='it'><div>"+esc(x.name||"ব্যাচ")+" · "+fmt(x.start)+"<small>"+bn(x.count)+"টি ডিম থেকে "+bn(x.hatched)+"টি বাচ্চা · হ্যাচ রেট "+bn(x.hatched/x.count*100)+"%<br>উর্বরতা "+bn((x.count-c.clear)/x.count*100)+"% · ভালো ডিম থেকে ফোটা "+(live(x)?bn(x.hatched/live(x)*100):"০")+"%</small></div></div>"});r+="</div>"}
@@ -656,10 +661,23 @@ function hat(i){var x=db.inc.filter(function(z){return z.id===i})[0],t=today();
 function endHatch(i){ask("সব বাচ্চা বের হয়েছে? ব্যাচটি শেষ করবেন? (পরে দরকার হলে আরও বাচ্চা যোগ করা যাবে)",[],function(){upd(i,function(x){x.hdone=true});alert("ব্যাচ শেষ হয়েছে। আর্দ্রতা আবার "+bn(H1)+"% করুন")},"শেষ করুন")}
 function delHatch(i,e){ask("এই এন্ট্রি মুছতে পাসওয়ার্ড দিন",[{l:"পাসওয়ার্ড",type:"pass"}],function(a){if(a[0]!==PW)return alert("পাসওয়ার্ড ভুল হয়েছে, কিছু মোছা হয়নি");
  var x=db.inc.filter(function(z){return z.id===i})[0],L=hList(x),k=L.filter(function(q){return String(q.id)===e})[0];if(!k)return;
- if(k.n>chickStock())return alert("এই বাচ্চার কিছু বিক্রি বা মৃত্যু লেখা আছে। আগে বাচ্চা ট্যাব থেকে সেই হিসাব ঠিক করুন");
+ if(k.n>chickStock()||x.hatched-k.n<selUsed(x.id))return alert("এই বাচ্চার কিছু বিক্রি বা মৃত্যু লেখা আছে। আগে বাচ্চা ট্যাব থেকে সেই হিসাব ঠিক করুন");
  upd(i,function(z){hSet(z,L.filter(function(q){return q!==k}))})},"মুছুন")}
-function chk(k){var f=[{l:k==="sell"?"কয়টি বাচ্চা বিক্রি করলেন?":"কয়টি বাচ্চা মারা গেছে?"}];if(k==="sell")f.push({l:"প্রতিটি বাচ্চার দাম (৳)"});
- ask(k==="sell"?"বাচ্চা বিক্রি":"বাচ্চা মারা গেছে",f,function(a){var n=+a[0];if(!n)return;if(n>chickStock())return alert("মজুদের চেয়ে বেশি");put("chk",{id:id(),date:today(),kind:k,n:n,price:k==="sell"?(+a[1]||0):0})},"সংরক্ষণ")}
+function bLabel(q){return "ব্যাচ "+bn(q.n)+(q.x.name&&q.x.name!=="ব্যাচ "+bn(q.n)?" · "+esc(q.x.name):"")+" · "+fmt(q.hd)}
+function chk(k,pre){var L=bStats().filter(function(q){return q.left>0});if(!L.length)return alert("কোনো ব্যাচে জীবিত বাচ্চা নেই");
+ var opts=[["","— ব্যাচ বাছুন —"]].concat(L.map(function(q){return[q.x.id,bLabel(q)+" ("+bn(q.left)+"টি জীবিত)"]}));
+ var f=[{l:"কোন ব্যাচ থেকে?",type:"sel",opts:opts,d:pre!=null?pre:(L.length===1?L[0].x.id:"")},{l:k==="sell"?"কয়টি বাচ্চা বিক্রি করলেন?":"কয়টি বাচ্চা মারা গেছে?"}];if(k==="sell")f.push({l:"প্রতিটি বাচ্চার দাম (৳)"});
+ ask(k==="sell"?"বাচ্চা বিক্রি":"বাচ্চা মারা গেছে",f,function(a){var q=qOf(L,a[0]),n=Number(a[1]);
+  if(!q)return alert("কোন ব্যাচ থেকে, সেটা বাছুন");
+  if(!(n>0)||n!==Math.floor(n))return alert("সঠিক সংখ্যা লিখুন");
+  if(n>q.left||n>chickStock())return alert("এই ব্যাচে জীবিত আছে "+bn(Math.min(q.left,Math.max(0,chickStock())))+"টি, তার চেয়ে বেশি");
+  put("chk",{id:id(),date:today(),kind:k,n:n,price:k==="sell"?(+a[2]||0):0,bid:q.x.id})},"সংরক্ষণ")}
+/* কোনো ব্যাচে বাছাই করা বিক্রি+মৃত্যু (skip এন্ট্রি বাদে) */
+function selUsed(bid,skip){return sum(db.chk.filter(function(k){return k!==skip&&k.bid!=null&&String(k.bid)===String(bid)}),function(k){return k.n})}
+function chkMove(i){var k=db.chk.filter(function(z){return z.id===i})[0];if(!k)return;
+ var L=bStats(),cur=qOf(L,k.bid),opts=[["","— ব্যাচ বাছুন —"]].concat(L.filter(function(q){return q.hatched-selUsed(q.x.id,k)>=k.n}).map(function(q){return[q.x.id,bLabel(q)]}));
+ if(opts.length<2)return alert("কোনো ব্যাচে "+bn(k.n)+"টি ধরার মতো বাচ্চা বাকি নেই");
+ ask((k.kind==="sell"?"বিক্রি ":"মৃত্যু ")+bn(k.n)+"টি ("+fmt(k.date)+") — কোন ব্যাচের?",[{l:"ব্যাচ",type:"sel",opts:opts,d:cur?cur.x.id:""}],function(a){var q=qOf(L,a[0]);if(!q)return alert("ব্যাচ বাছুন");k.bid=q.x.id;save();draw()},"সংরক্ষণ")}
 
 /* ---------- মুরগি ও ওষুধ ---------- */
 function flock(){
@@ -772,7 +790,7 @@ function medStock(){var L=medStockList(),h="<h2>📦 ওষুধ ও ভিট�
 function medEdit(i){var x=one("med",i);if(!x)return;function go2(){pickT(x.bid,function(s){x.bid=s;save();draw()},"কাদের জন্য এই ওষুধ / টিকা?")}
  if(!x.done)return go2();
  ask("দেওয়া হয়ে গেছে, বদলাতে পাসওয়ার্ড দিন",[{l:"পাসওয়ার্ড",type:"pass"}],function(a){if(a[0]!==PW)return alert("পাসওয়ার্ড ভুল হয়েছে, কিছু বদলায়নি");go2()},"বদলান")}
-function batchLeftAt(d){var o=db.inc.filter(function(x){return x.hatched!=null&&diff(d,bHatch(x))>=0}).sort(function(a,b){return a.start<b.start?-1:1}).map(function(x){return{x:x,left:x.hatched,age:diff(d,bHatch(x))}}),rem=sum(db.chk.filter(function(k){return k.date<=d}),function(k){return k.n});o.forEach(function(q){var t=Math.min(q.left,rem);q.left-=t;rem-=t});return o}
+function batchLeftAt(d){var o=db.inc.filter(function(x){return x.hatched!=null&&diff(d,bHatch(x))>=0}).sort(function(a,b){return a.start<b.start?-1:1}).map(function(x){return{x:x,left:x.hatched,age:diff(d,bHatch(x))}}),rem=takeSel(o,db.chk.filter(function(k){return k.date<=d}));o.forEach(function(q){var t=Math.min(q.left,rem);q.left-=t;rem-=t});return o}
 function splitAmt(bid,amt,date){var o={p:0,ex:0,un:0,b:{}};amt=+amt||0;if(!amt)return o;var hb=db.inc.filter(function(x){return x.hatched!=null}),hs=sum(hb,function(x){return x.hatched});
  if(Array.isArray(bid)){
   if(bid.indexOf("none")>=0){o.ex=amt;return o}
@@ -872,7 +890,7 @@ function rt(k,d){return rateAt(k,today(),d)}
 function kgg(k){var g=Math.round(k*1000);return bn(Math.floor(g/1000))+" কেজি "+bn(g%1000)+" গ্রাম"}
 function wlatest(t){var l=wlog(t);return l.length?l[l.length-1].avg:null}
 function totalW(){var w=0,n=0;db.flock.forEach(function(g){var a=wlatest("f:"+g.id);if(a!=null&&g.n){w+=a*g.n;n+=g.n}});if(!n)return null;var m=w/n,t=0;db.flock.forEach(function(g){var a=wlatest("f:"+g.id);t+=(a!=null?a:m)*g.n});return t}
-function batchLeft(){var o=db.inc.filter(function(x){return x.hatched!=null}).sort(function(a,b){return a.start<b.start?-1:1}).map(function(x){return{x:x,left:x.hatched,age:diff(today(),bHatch(x))}}),rem=sum(db.chk,function(k){return k.n});o.forEach(function(q){var t=Math.min(q.left,rem);q.left-=t;rem-=t});return o}
+function batchLeft(){var o=db.inc.filter(function(x){return x.hatched!=null}).sort(function(a,b){return a.start<b.start?-1:1}).map(function(x){return{x:x,left:x.hatched,age:diff(today(),bHatch(x))}}),rem=takeSel(o,db.chk);o.forEach(function(q){var t=Math.min(q.left,rem);q.left-=t;rem-=t});return o}
 function chickBuckets(){var b={chick:0,m1:0,m2:0,m3:0};batchLeft().forEach(function(o){b[o.age<30?"chick":o.age<60?"m1":o.age<90?"m2":"m3"]+=o.left});return b}
 function growW(){var w=0;batchLeft().forEach(function(o){var a=wlatest("b:"+o.x.id);if(a!=null)w+=a*o.left});return w}
 function parentVal(){var w=totalW();if(rt("kg")>0&&w!=null)return{v:w*rt("kg"),m:"ওজন "+kgg(w)+" × "+tk(rt("kg"))+"/কেজি"};return{v:parentsVal(),m:"ক্রয়মূল্য ধরে (ওজন ও কেজি রেট দিলে বাজার দরে হবে)"}}
@@ -1086,7 +1104,7 @@ function meat(){var t=today(),h="";
  return "<h1>🍗 মাংসের মুরগি</h1><div class='sum'><div class='y'><b>"+bn(chickStock())+"</b><span>মোট বাচ্চা মজুদ<br>(বাচ্চা থেকে ২–৬ মাস)</span></div><div><b>"+tk(chickStock()*(rt("m1")||120))+"</b><span>আনুমানিক মূল্য (১ মাস রেট ধরে)</span></div></div>"+
  "<h2>ব্যাচ অনুযায়ী</h2><div class='box'>"+(h||"<div class='empty'>এখনো কোনো ব্যাচ ফোটেনি</div>")+"</div>";
 }
-function bHatch(x){return x.hlog&&x.hlog.length&&x.hdate?x.hdate:addD(x.start,x.days||21)}
+function bHatch(x){return x.hdate||addD(x.start,x.days||21)}
 function assetsTab(){var p=assetParts(),h="";Object.keys(p).forEach(function(k){h+="<div class='it'><div>"+k+"</div><b>"+tk(p[k])+"</b></div>"});
  var l=db.led.filter(function(x){return x.type==="asset"}),lh="";
  l.forEach(function(x){lh+="<div class='it'><div>"+esc(x.cat)+"<small>"+fmt(x.date)+"</small></div><div class='act'><b>"+tk(x.amt)+"</b><button class='s' onclick='del(\"led\","+x.id+")'>মুছুন</button></div></div>"});
