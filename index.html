@@ -383,9 +383,14 @@ function seedStock(){return sum(db.eggs,function(x){return x.seed-(x.seedBad||0)
 function tableStock(){return sum(db.eggs,function(x){return x.table})+sum(db.inc,function(x){return cd(x).clear})-sum(db.esale,function(x){return x.n+(x.bad||0)})}
 function chickStock(){return sum(db.inc,function(x){return x.hatched||0})-sum(db.chk,function(x){return x.n})}
 function oldestSeed(){var r=seedStock();if(r<=0)return null;var a=db.eggs.slice().sort(function(x,y){return x.date<y.date?1:-1}),acc=0;for(var i=0;i<a.length;i++){acc+=a[i].seed-(a[i].seedBad||0);if(acc>=r)return a[i].date}return null}
+var HF=20,HL=22; /* বাচ্চা বের করার দিন: ২০ থেকে ২২ */
+function hOpen(x){return x.hatched!=null&&!x.hdone&&diff(today(),x.start)<=HL}
+function running(x){return x.hatched==null||hOpen(x)}
+function ended(x){return !running(x)}
+function trayLeft(x){return Math.max(0,(x.tr!=null?x.tr:live(x))-(x.hatched||0))}
 function setterUsed(){return sum(db.inc.filter(function(x){return x.hatched==null&&x.tr==null}),live)}
-function hatcherUsed(){return sum(db.inc.filter(function(x){return x.hatched==null&&x.tr!=null}),function(x){return x.tr})}
-function hatchRate(){var d=db.inc.filter(function(x){return x.hatched!=null&&x.count});return d.length?sum(d,function(x){return x.hatched})/sum(d,function(x){return x.count})*100:null}
+function hatcherUsed(){return sum(db.inc.filter(function(x){return running(x)&&(x.tr!=null||x.hatched!=null)}),trayLeft)}
+function hatchRate(){var d=db.inc.filter(function(x){return ended(x)&&x.count});return d.length?sum(d,function(x){return x.hatched})/sum(d,function(x){return x.count})*100:null}
 function seedPerDay(){var t=today();return sum(db.eggs.filter(function(x){return diff(t,x.date)>=0&&diff(t,x.date)<7}),function(x){return x.seed})/7}
 function feedLeft(){return sum(db.feed,function(x){return x.kind==="buy"||x.kind==="less"?x.kg:-x.kg})-autoUse()}
 function autoRules(){return (db.cfg||[]).filter(function(x){return x.type==="autofeed"}).sort(function(a,b){return a.from<b.from?-1:1})}
@@ -421,7 +426,7 @@ function fin(m){
  db.eggs.forEach(function(x){if(ok(x.date)&&!x.open){var q=(x.seed||0)+(x.table||0);ec+=q;ev+=q*rateAt("egg",x.date,20)}});
  if(ec)a(i,"ডিম উৎপাদন মূল্য ("+bn(ec)+"টি, গড় "+tk(ev/ec)+")",ev);
  db.esale.forEach(function(x){if(ok(x.date))cash+=x.n*(x.price||0)});
- var hb=db.inc.filter(function(x){return x.hatched!=null}),hh=sum(hb,function(x){return x.hatched}),ac=hh?sum(hb,function(x){return x.count*rateAt("egg",x.start,20)})/hh:0;
+ var hb=db.inc.filter(ended),hh=sum(hb,function(x){return x.hatched}),ac=hh?sum(hb,function(x){return x.count*rateAt("egg",x.start,20)})/hh:0;
  db.chk.forEach(function(x){if(x.kind==="sell"&&ok(x.date))a(i,"বাচ্চা বিক্রি (ডিমের মূল্য বাদে)",x.n*((x.price||0)-ac))});
  var au=autoUse(m||null),mu=manualUse(m||null),fap=feedAvgPrice();
  if(au){var k1="রেগুলার খাবার — অটো ("+bn(au)+" কেজি)";a(o,k1,au*fap);a(od,k1,au*fap);food+=au*fap}
@@ -440,11 +445,13 @@ function invest(){var f=fin(null),fp=sum(db.feed.filter(function(x){return x.kin
 function todayEggs(){var t=today(),a=db.eggs.filter(function(x){return x.date===t});return{s:sum(a,function(x){return x.seed}),t:sum(a,function(x){return x.table})}}
 function home(){
  var t=today(),all=fin(null),mo=fin(t.slice(0,7)),net=all.net,al=[];
- db.inc.forEach(function(x){if(x.hatched!=null)return;var d=diff(t,x.start),nm=esc(x.name||"ব্যাচ");
+ db.inc.forEach(function(x){if(!running(x))return;var d=diff(t,x.start),nm=esc(x.name||"ব্যাচ");
+  if(x.hatched!=null){al.push("🐣 "+nm+": "+bn(d)+"তম দিন, এ পর্যন্ত "+bn(x.hatched)+"টি বাচ্চা বের হয়েছে। আরও ফুটলে ইনকিউবেটর ট্যাবে লিখুন"+(d>=HL?"। আজ শেষ দিন, বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করুন":""));return}
   if(d===0)al.push("🌡️ "+nm+": নতুন ব্যাচ, তাপমাত্রা "+bn(TEMP)+"° ও আর্দ্রতা "+bn(H1)+"% সেট করুন");
   if(x.tr==null&&d===TDAY-1)al.push("⏰ "+nm+": আগামীকাল ১৮তম দিন, ডিম হ্যাচিং ট্রেতে উঠাবেন ও আর্দ্রতা "+bn(H2)+"% করবেন (তাপমাত্রা "+bn(TEMP)+"° ই)");
   if(x.tr==null&&d>=TDAY)al.push("🐣 "+nm+": ১৮ দিন পূর্ণ! এখনই ডিম হ্যাচিং ট্রেতে উঠান ও আর্দ্রতা "+bn(H2)+"% করুন");
   if(x.tr==null&&!(x.cands&&x.cands.length)&&d>=CAND&&d<TDAY)al.push("🔦 "+nm+": ক্যান্ডলিং করুন (বাওয়া, নষ্ট ও ভাঙা ডিম গুনুন)");
+  if(x.tr!=null&&d===HF&&d<x.days)al.push("🐣 "+nm+": আজ ২০তম দিন, যে বাচ্চা ফুটেছে বের করে সংখ্যা লিখুন");
   if(x.tr!=null&&d>=x.days&&d<TDAY+HPH)al.push("🐥 "+nm+": বাচ্চা ফোটার সময়, আর্দ্রতা "+bn(H2)+"% থাকবে");
   if(x.tr!=null&&d===TDAY+HPH-1)al.push("⏰ "+nm+": আগামীকাল বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করতে হবে");
   if(x.tr!=null&&d>=TDAY+HPH)al.push("💧 "+nm+": বাচ্চা বের করুন, আর্দ্রতা আবার "+bn(H1)+"% করুন, কয়টি ফুটল লিখুন");
@@ -515,39 +522,45 @@ function addSale(){var n=+v("sn");if(!n||!v("sd"))return alert("সংখ্য�
 /* ---------- ইনকিউবেটর ---------- */
 function stp(ic,t,d){return "<div class='it'><div>"+ic+" <b>"+t+"</b><small>"+d+"</small></div></div>"}
 function nextTodo(x){var d=diff(today(),x.start),dC=addD(x.start,CAND),dT=addD(x.start,TDAY),dH=addD(x.start,x.days),dO=addD(x.start,TDAY+HPH);
- if(x.hatched!=null)return "";
+ if(!running(x))return "";
+ if(x.hatched!=null)return "এখন করণীয়: "+(d>=HL?"আজ ২২তম দিন, বাকি বাচ্চা বের করে সংখ্যা লিখুন ও আর্দ্রতা "+bn(H1)+"% করুন":"আরও বাচ্চা ফুটলে বের করে সংখ্যা লিখুন (২২তম দিন "+fmt(addD(x.start,HL))+" পর্যন্ত)");
+ if(x.tr!=null&&d>=HF&&d<HL)return "এখন করণীয়: যে বাচ্চা ফুটেছে বের করে সংখ্যা লিখুন (২০–২২ দিন), আর্দ্রতা "+bn(H2)+"% থাকবে";
  if(!(x.cands&&x.cands.length)&&d<TDAY)return d>=CAND?"এখন করণীয়: ক্যান্ডলিং করে বাওয়া, নষ্ট ও ভাঙা ডিম বের করুন":"পরের করণীয়: "+fmt(dC)+" তারিখে ক্যান্ডলিং ("+bn(CAND-d)+" দিন পর)";
  if(x.tr==null)return d>=TDAY?"এখন করণীয়: ডিম হ্যাচিং ট্রেতে উঠান, ডিম ঘোরানো বন্ধ করুন, আর্দ্রতা "+bn(H1)+" থেকে "+bn(H2)+"% করুন (তাপমাত্রা "+bn(TEMP)+"° ই থাকবে)":"পরের করণীয়: "+fmt(dT)+" তারিখে ডিম হ্যাচিং ট্রেতে উঠানো ও আর্দ্রতা "+bn(H2)+"% করা ("+bn(TDAY-d)+" দিন পর)";
  if(d>=TDAY+HPH)return "এখন করণীয়: বাচ্চা বের করুন, আর্দ্রতা আবার "+bn(H1)+"% করুন, কয়টি ফুটল লিখুন";
  if(d>=x.days)return "এখন করণীয়: বাচ্চা ফুটছে, আর্দ্রতা "+bn(H2)+"% থাকবে। "+fmt(dO)+" তারিখে বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করুন";
  return "পরের করণীয়: "+fmt(dH)+" থেকে বাচ্চা ফোটা শুরু ("+bn(x.days-d)+" দিন পর)। "+fmt(dO)+" তারিখে বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করুন"}
-function envNow(x){if(x.hatched!=null)return "";var d=diff(today(),x.start);
+function envNow(x){if(!running(x))return "";var d=diff(today(),x.start);
  if(d<TDAY)return "🌡️ "+bn(TEMP)+"° · 💧 আর্দ্রতা "+bn(H1)+"% ("+fmt(addD(x.start,TDAY))+" পর্যন্ত)";
  if(d<TDAY+HPH)return "🌡️ "+bn(TEMP)+"° · 💧 আর্দ্রতা "+bn(H2)+"% ("+fmt(addD(x.start,TDAY+HPH))+" পর্যন্ত)";
  return "💧 বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করুন"}
 function batchCard(x){
- var t=today(),d=diff(t,x.start),c=cd(x),lv=live(x),dC=addD(x.start,CAND),dT=addD(x.start,TDAY),dH=addD(x.start,x.days),h="",b="",todo=nextTodo(x);
+ var t=today(),d=diff(t,x.start),run=running(x),c=cd(x),lv=live(x),dC=addD(x.start,CAND),dT=addD(x.start,TDAY),dH=addD(x.start,x.days),h="",b="",todo=nextTodo(x);
  h+=stp("✅","ডিম বসানো",fmt(x.start)+" · "+bn(x.count)+"টি ডিম<br>🌡️ "+bn(TEMP)+"° · 💧 আর্দ্রতা "+bn(H1)+"% (প্রথম "+bn(TDAY)+" দিন)");
  (x.cands||[]).forEach(function(k,j){h+=stp("✅","ক্যান্ডলিং "+bn(j+1)+(k.date?" · "+fmt(k.date):""),"বাওয়া "+bn(k.clear)+" · পচা/নষ্ট "+bn(k.rot)+" · ভাঙা "+bn(k.broken)+(k.sid?" · বাওয়া ডিম বিক্রি হয়েছে":"")+" <button class='s' onclick='delCand("+x.id+","+j+")'>মুছুন</button>")});
  if(x.cands&&x.cands.length)h+="<div class='it'><div>🥚 ইনকিউবেটরে এখন ভালো ডিম <b>"+bn(lv)+"টি</b><small>মোট বাদ: বাওয়া "+bn(c.clear)+" · পচা/নষ্ট "+bn(c.rot)+" · ভাঙা "+bn(c.broken)+"</small></div></div>";
  else h+=stp(d>=CAND?"⚠️":"⏳","ক্যান্ডলিং (৫–৬ দিনে)",d>=CAND?"<span class='bad'>এখনই করুন</span> · "+fmt(dC)+" থেকে":fmt(dC)+" · "+bn(CAND-d)+" দিন পর");
  if(x.tr!=null)h+=stp("✅","হ্যাচিং ট্রেতে উঠানো",bn(x.tr)+"টি"+(lv>x.tr?" · ১৮ দিনে নষ্ট "+bn(lv-x.tr):"")+"<br>🌡️ "+bn(TEMP)+"° · 💧 আর্দ্রতা "+bn(H2)+"% (পরের "+bn(HPH)+" দিন)");
  else h+=stp(d>=TDAY?"⚠️":"⏳","হ্যাচিং ট্রেতে উঠান (১৮তম দিন)",fmt(dT)+(d>=TDAY?" · <span class='bad'>আজই উঠান</span>":" · "+bn(TDAY-d)+" দিন পর")+"<br>তখন আর্দ্রতা "+bn(H2)+"% করুন (তাপমাত্রা "+bn(TEMP)+"°)");
- if(x.hatched!=null)h+=stp("✅","বাচ্চা ফুটেছে",bn(x.hatched)+"টি · হ্যাচ রেট "+bn(x.hatched/x.count*100)+"% · বাচ্চার হিসাব “বাচ্চা” ট্যাবে");
- else h+=stp(x.tr!=null&&d>=x.days?"⚠️":"⏳","বাচ্চা ফোটা (২১–২২ দিন)",fmt(dH)+(d<x.days?" · "+bn(x.days-d)+" দিন পর":" · <span class='bad'>এখন</span>")+" · হ্যাচিং ট্রেতে "+bn(HPH)+" দিন<br>"+fmt(addD(x.start,TDAY+HPH))+" তারিখে বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করুন");
- if(x.hatched==null){
-  b+="<button class='s p' onclick='panel={t:\"cand\",id:"+x.id+"};draw();window.scrollTo(0,0)'>"+((x.cands&&x.cands.length)?"আবার ক্যান্ডলিং":"ক্যান্ডলিং লিখুন")+"</button>";
-  if(x.tr==null)b+="<button class='s p' onclick='trf("+x.id+")'>ট্রেতে উঠালাম</button>";else b+="<button class='s p' onclick='hat("+x.id+")'>কয়টি ফুটল?</button>";
- }
- if(x.hatched!=null)b+="<button class='s p' onclick='moreHatch("+x.id+")'>আরও বাচ্চা বের করলাম</button>";
+ if(x.hatched!=null)h+=stp(run?"🐣":"✅",run?"বাচ্চা বের হচ্ছে":"বাচ্চা ফুটেছে",(run?"এ পর্যন্ত ":"মোট ")+bn(x.hatched)+"টি · হ্যাচ রেট "+bn(x.hatched/x.count*100)+"%"+(run?" · ট্রেতে বাকি ডিম "+bn(trayLeft(x))+"টি":" · বাচ্চার হিসাব “বাচ্চা” ট্যাবে"));
+ else h+=stp(d>=HF?"⚠️":"⏳","বাচ্চা ফোটা (২০–২২ দিন)",fmt(addD(x.start,HF))+" থেকে "+fmt(addD(x.start,HL))+(d<HF?" · "+bn(HF-d)+" দিন পর":" · <span class='bad'>এখন</span>")+"<br>"+fmt(addD(x.start,HL))+" তারিখে শেষ বাচ্চা বের করে আর্দ্রতা "+bn(H1)+"% করুন");
+ if(x.hatched!=null||d>=HF-1)h+=hatchTable(x);
+ if(run){
+  if(x.hatched==null){
+   b+="<button class='s p' onclick='panel={t:\"cand\",id:"+x.id+"};draw();window.scrollTo(0,0)'>"+((x.cands&&x.cands.length)?"আবার ক্যান্ডলিং":"ক্যান্ডলিং লিখুন")+"</button>";
+   if(x.tr==null)b+="<button class='s p' onclick='trf("+x.id+")'>ট্রেতে উঠালাম</button>";
+  }
+  if(x.tr!=null||x.hatched!=null||d>=HF)b+="<button class='s p' onclick='hat("+x.id+")'>🐣 বাচ্চা বের করলাম</button>";
+  if(x.hatched!=null)b+="<button class='s p' onclick='endHatch("+x.id+")'>ব্যাচ শেষ করুন</button>";
+ } else b+="<button class='s p' onclick='hat("+x.id+")'>আরও বাচ্চা বের করলাম</button>";
  b+="<button class='s' onclick='del(\"inc\","+x.id+")'>মুছুন</button>";
- return "<div class='box'><div class='it' style='border:0;padding-top:0'><b style='font-size:17px'>"+esc(x.name||"ব্যাচ")+" · "+bn(x.count)+"টি</b>"+(x.hatched==null?"<span>"+bn(Math.max(0,d))+" / "+bn(x.days)+" দিন</span>":"")+"</div>"+
- (x.hatched==null?"<div class='bar'><i style='width:"+Math.min(100,Math.max(0,d)/x.days*100)+"%'></i></div><div class='it' style='background:var(--inp);border-radius:8px;padding:8px;border:0;margin-bottom:4px'><b class='"+(todo.indexOf("এখন")===0?"bad":"ok")+"'>👉 "+todo+"</b><br><b>"+envNow(x)+"</b></div>":"")+h+"<div style='text-align:right;margin-top:6px'>"+b+"</div></div>";
+ return "<div class='box'><div class='it' style='border:0;padding-top:0'><b style='font-size:17px'>"+esc(x.name||"ব্যাচ")+" · "+bn(x.count)+"টি</b>"+(run?"<span>"+bn(Math.max(0,d))+" / "+bn(x.days)+" দিন</span>":"")+"</div>"+
+ (run?"<div class='bar'><i style='width:"+Math.min(100,Math.max(0,d)/x.days*100)+"%'></i></div><div class='it' style='background:var(--inp);border-radius:8px;padding:8px;border:0;margin-bottom:4px'><b class='"+(todo.indexOf("এখন")===0?"bad":"ok")+"'>👉 "+todo+"</b><br><b>"+envNow(x)+"</b></div>":"")+h+"<div style='text-align:right;margin-top:6px'>"+b+"</div></div>";
 }
 function inc(){
  var su=setterUsed(),hu=hatcherUsed(),r,
- act=db.inc.filter(function(x){return x.hatched==null}).sort(function(x,y){return x.start<y.start?-1:1}),
- dn=db.inc.filter(function(x){return x.hatched!=null}).sort(function(x,y){return x.start<y.start?1:-1});
+ act=db.inc.filter(running).sort(function(x,y){return x.start<y.start?-1:1}),
+ dn=db.inc.filter(ended).sort(function(x,y){return x.start<y.start?1:-1});
  r="<h1>🔌 ইনকিউবেটর (৬০০)</h1><div class='sum'><div class='y'><b>"+bn(su)+"</b><span>সেটারে এখন ডিম<br>"+bn(SETTER)+" এর মধ্যে</span></div><div><b>"+bn(hu)+"</b><span>হ্যাচিং ট্রেতে<br>"+bn(HATCHER)+" এর মধ্যে</span></div>"+
  "<div><b>"+bn(sum(db.inc,function(x){return cd(x).clear}))+"</b><span>ক্যান্ডলিংয়ে বাওয়া<br>(খাওয়ার ডিম হয়েছে)</span></div><div class='r'><b>"+bn(sum(db.inc,function(x){return cd(x).rot+cd(x).broken}))+"</b><span>নষ্ট ও ভাঙা ডিম</span></div></div>";
  if(panel&&panel.t==="cand"){var b0=db.inc.filter(function(z){return z.id===panel.id})[0];
@@ -567,7 +580,7 @@ function inc(){
 /* ---------- বাচ্চা ট্যাব: ব্যাচ বাছাই (ড্রপডাউন) ---------- */
 var CB="all";
 function bStats(){var all=db.inc.slice().sort(function(a,b){return a.start<b.start?-1:1}),
- hb=all.filter(function(x){return x.hatched!=null}).map(function(x){return{x:x,n:all.indexOf(x)+1,hd:addD(x.start,x.days),hatched:x.hatched||0,left:x.hatched||0,sold:0,soldAmt:0,dead:0,log:[]}}),
+ hb=all.filter(function(x){return x.hatched!=null}).map(function(x){return{x:x,n:all.indexOf(x)+1,hd:bHatch(x),hatched:x.hatched||0,left:x.hatched||0,sold:0,soldAmt:0,dead:0,log:[]}}),
  ch=db.chk.slice().sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:(a.id<b.id?-1:1)});
  ch.forEach(function(k){var rem=k.n;
   [function(q){return q.left>0&&q.hd<=k.date},function(q){return q.left>0}].forEach(function(f){hb.forEach(function(q){if(rem<=0||!f(q))return;var t=Math.min(q.left,rem);q.left-=t;rem-=t;if(k.kind==="sell"){q.sold+=t;q.soldAmt+=t*(k.price||0)}else q.dead+=t;q.log.push({d:k.date,kind:k.kind,n:t,price:k.price||0})})})});
@@ -617,8 +630,34 @@ function saveCand(){var c=+v("cc")||0,r=+v("cr")||0,b=+v("cb")||0,p=+v("cp")||0,
 function delCand(i,j){ask("ক্যান্ডলিং এন্ট্রি মুছতে পাসওয়ার্ড দিন",[{l:"পাসওয়ার্ড",type:"pass"}],function(a){if(a[0]!==PW)return alert("পাসওয়ার্ড ভুল হয়েছে, কিছু মোছা হয়নি");var x=db.inc.filter(function(z){return z.id===i})[0],k=x.cands.splice(j,1)[0];if(k&&k.sid)db.esale=db.esale.filter(function(e){return e.id!==k.sid});save();draw()},"মুছুন")}
 function trf(i){var x=db.inc.filter(function(z){return z.id===i})[0];ask("কয়টি ডিম হ্যাচিং ট্রেতে উঠালেন?",[{l:"ডিমের সংখ্যা",d:live(x)}],function(a){var n=+a[0]||0;
  if(hatcherUsed()+n>HATCHER)ask("হ্যাচিং ট্রেতে "+HATCHER+"টির বেশি হয়ে যাবে। তবুও?",[],function(){upd(i,function(z){z.tr=n})},"হ্যাঁ");else upd(i,function(z){z.tr=n})},"সংরক্ষণ")}
-function hat(i){ask("কয়টি বাচ্চা ফুটেছে?",[{l:"বাচ্চার সংখ্যা"},{l:"বাচ্চার ১ম দিন (বাচ্চা বের করার তারিখ)",type:"date",d:today()}],function(a){if(a[0]==="")return;upd(i,function(x){x.hatched=+a[0]||0;x.hdate=a[1]||today()});alert("মনে রাখুন: আর্দ্রতা আবার "+bn(H1)+"% করুন। বাচ্চার ওষুধ-ভ্যাক্সিনের করণীয় হোমে আসবে।")},"সংরক্ষণ")}
-function moreHatch(i){ask("আরও কয়টি বাচ্চা বের করলেন?",[{l:"নতুন বাচ্চার সংখ্যা (আগেরগুলো বাদে)"}],function(a){var n=+a[0];if(!n)return;upd(i,function(x){x.hatched=(x.hatched||0)+n});alert("মোট বাচ্চা বেড়েছে। সব বাচ্চা বের হলে আর্দ্রতা আবার "+bn(H1)+"% করে দিন")},"যোগ করুন")}
+/* প্রতি ব্যাচের বাচ্চা বের করার এন্ট্রি (hlog)। পুরোনো ডাটায় শুধু মোট সংখ্যা থাকলে সেটাকে একটি এন্ট্রি ধরা হয় */
+function hList(x){if(x.hlog&&x.hlog.length)return x.hlog;return x.hatched?[{id:"old",n:x.hatched,date:x.hdate||addD(x.start,x.days||21),old:1}]:[]}
+function hSet(x,L){if(!L.length){x.hatched=null;x.hlog=[];delete x.hdate;x.hdone=false;return}
+ x.hlog=L;x.hatched=sum(L,function(k){return k.n});x.hdate=L.map(function(k){return k.date}).sort()[0]}
+function hatchTable(x){var t=today(),L=hList(x),run=running(x),h="",days=[];
+ for(var k=HF;k<=HL;k++)days.push(k);
+ L.forEach(function(e){var k=diff(e.date,x.start);if(days.indexOf(k)<0)days.push(k)});
+ days.sort(function(a,b){return a-b}).forEach(function(k){var date=addD(x.start,k),E=L.filter(function(e){return e.date===date});
+  h+="<div class='it'><div>"+bn(k)+"তম দিন · "+fmt(date)+E.map(function(e){return "<small>"+bn(e.n)+"টি বাচ্চা"+(e.old?" (আগের এন্ট্রি)":"")+" <button class='s' onclick='delHatch("+x.id+",\""+e.id+"\")'>মুছুন</button></small>"}).join("")+"</div><b>"+(E.length?bn(sum(E,function(e){return e.n}))+"টি":(run&&diff(date,t)>=0?"বাকি":"—"))+"</b></div>"});
+ return "<div style='background:var(--inp);border-radius:8px;padding:6px 8px;margin:6px 0'><b>🐥 দিন অনুযায়ী বাচ্চা বের করা</b>"+h+"<div class='it' style='border:0'><b>মোট</b><b class='ok'>"+bn(x.hatched||0)+"টি</b></div></div>"}
+function hat(i){var x=db.inc.filter(function(z){return z.id===i})[0],t=today();
+ ask(esc(x.name||"ব্যাচ")+": কয়টি বাচ্চা বের করলেন?",[{l:"এই দিনে বের করা বাচ্চা (আগেরগুলো বাদে)"},{l:"বাচ্চা বের করার তারিখ",type:"date",d:t}],function(a){
+  if(a[0]==="")return;var n=Number(a[0]),date=a[1]||today(),dn=diff(date,x.start),w=[];
+  if(!(n>=0)||n!==Math.floor(n))return alert("সঠিক সংখ্যা লিখুন");
+  if(dn<0)return alert("তারিখটি ডিম বসানোর আগের");
+  if(diff(date,today())>0)return alert("সামনের তারিখ দেওয়া যাবে না");
+  if(!n){if(x.hatched!=null)return;ask("কোনো বাচ্চা ফোটেনি ধরে ব্যাচ শেষ করবেন?",[],function(){upd(i,function(z){z.hatched=0;z.hlog=[];z.hdate=date;z.hdone=true})},"হ্যাঁ");return}
+  if(dn<HF||dn>HL)w.push("এই তারিখ "+bn(dn)+"তম দিন (সাধারণত ২০–২২ দিন)।");
+  if((x.hatched||0)+n>(x.tr!=null?x.tr:live(x)))w.push("মোট বাচ্চা ট্রের ডিমের চেয়ে বেশি হয়ে যাচ্ছে।");
+  function go1(){upd(i,function(z){hSet(z,hList(z).map(function(e){return e.old?{id:id(),n:e.n,date:e.date}:e}).concat([{id:id(),n:n,date:date}]))});
+   var z=db.inc.filter(function(q){return q.id===i})[0];
+   alert(hOpen(z)&&diff(today(),z.start)<HL?"সংরক্ষণ হয়েছে। এ পর্যন্ত মোট "+bn(z.hatched)+"টি। বাকি ডিমের জন্য আর্দ্রতা "+bn(H2)+"% রাখুন":"সংরক্ষণ হয়েছে। মোট "+bn(z.hatched)+"টি। সব বাচ্চা বের হলে আর্দ্রতা "+bn(H1)+"% করুন")}
+  if(w.length)ask(w.join(" ")+" তবুও সংরক্ষণ করবেন?",[],go1,"সংরক্ষণ করুন");else go1()},"সংরক্ষণ")}
+function endHatch(i){ask("সব বাচ্চা বের হয়েছে? ব্যাচটি শেষ করবেন? (পরে দরকার হলে আরও বাচ্চা যোগ করা যাবে)",[],function(){upd(i,function(x){x.hdone=true});alert("ব্যাচ শেষ হয়েছে। আর্দ্রতা আবার "+bn(H1)+"% করুন")},"শেষ করুন")}
+function delHatch(i,e){ask("এই এন্ট্রি মুছতে পাসওয়ার্ড দিন",[{l:"পাসওয়ার্ড",type:"pass"}],function(a){if(a[0]!==PW)return alert("পাসওয়ার্ড ভুল হয়েছে, কিছু মোছা হয়নি");
+ var x=db.inc.filter(function(z){return z.id===i})[0],L=hList(x),k=L.filter(function(q){return String(q.id)===e})[0];if(!k)return;
+ if(k.n>chickStock())return alert("এই বাচ্চার কিছু বিক্রি বা মৃত্যু লেখা আছে। আগে বাচ্চা ট্যাব থেকে সেই হিসাব ঠিক করুন");
+ upd(i,function(z){hSet(z,L.filter(function(q){return q!==k}))})},"মুছুন")}
 function chk(k){var f=[{l:k==="sell"?"কয়টি বাচ্চা বিক্রি করলেন?":"কয়টি বাচ্চা মারা গেছে?"}];if(k==="sell")f.push({l:"প্রতিটি বাচ্চার দাম (৳)"});
  ask(k==="sell"?"বাচ্চা বিক্রি":"বাচ্চা মারা গেছে",f,function(a){var n=+a[0];if(!n)return;if(n>chickStock())return alert("মজুদের চেয়ে বেশি");put("chk",{id:id(),date:today(),kind:k,n:n,price:k==="sell"?(+a[1]||0):0})},"সংরক্ষণ")}
 
@@ -733,7 +772,7 @@ function medStock(){var L=medStockList(),h="<h2>📦 ওষুধ ও ভিট�
 function medEdit(i){var x=one("med",i);if(!x)return;function go2(){pickT(x.bid,function(s){x.bid=s;save();draw()},"কাদের জন্য এই ওষুধ / টিকা?")}
  if(!x.done)return go2();
  ask("দেওয়া হয়ে গেছে, বদলাতে পাসওয়ার্ড দিন",[{l:"পাসওয়ার্ড",type:"pass"}],function(a){if(a[0]!==PW)return alert("পাসওয়ার্ড ভুল হয়েছে, কিছু বদলায়নি");go2()},"বদলান")}
-function batchLeftAt(d){var o=db.inc.filter(function(x){return x.hatched!=null&&diff(d,addD(x.start,x.days))>=0}).sort(function(a,b){return a.start<b.start?-1:1}).map(function(x){return{x:x,left:x.hatched,age:diff(d,addD(x.start,x.days))}}),rem=sum(db.chk.filter(function(k){return k.date<=d}),function(k){return k.n});o.forEach(function(q){var t=Math.min(q.left,rem);q.left-=t;rem-=t});return o}
+function batchLeftAt(d){var o=db.inc.filter(function(x){return x.hatched!=null&&diff(d,bHatch(x))>=0}).sort(function(a,b){return a.start<b.start?-1:1}).map(function(x){return{x:x,left:x.hatched,age:diff(d,bHatch(x))}}),rem=sum(db.chk.filter(function(k){return k.date<=d}),function(k){return k.n});o.forEach(function(q){var t=Math.min(q.left,rem);q.left-=t;rem-=t});return o}
 function splitAmt(bid,amt,date){var o={p:0,ex:0,un:0,b:{}};amt=+amt||0;if(!amt)return o;var hb=db.inc.filter(function(x){return x.hatched!=null}),hs=sum(hb,function(x){return x.hatched});
  if(Array.isArray(bid)){
   if(bid.indexOf("none")>=0){o.ex=amt;return o}
@@ -797,7 +836,7 @@ function moneyBase(){
 }
 function addLed(){var a=+v("am"),p=v("ct").split("|");if(!a||!v("ld"))return alert("টাকা ও তারিখ দিন");var isM=p[2]===MEDC,mn=isM?v("lmn").trim():"";if(isM&&!mn)return alert("ওষুধের নাম দিন");var bid=bidRule(p)||LD.slice(),e={id:id(),date:v("ld"),type:p[0],grp:p[1],cat:p[2],amt:a,note:v("ln"),bid:bid};if(p[0]==="asset"){var nm=v("ln").trim();if(!nm)return alert("জিনিসের নাম নোটে লিখুন");e.cat=nm;e.note=""}if(isM){var q=+v("lmq")||1;e.med={name:mn,qty:q,left:q,unit:v("lmu")};LT=["p"]}LD=["p"];put("led",e)}
 
-function bsum(){var d=db.inc.filter(function(x){return x.hatched!=null}),sc=sum(d,function(x){return x.count}),sh=sum(d,function(x){return x.hatched}),scl=sum(d,function(x){return cd(x).clear}),sr=sum(d,function(x){return cd(x).rot}),sb=sum(d,function(x){return cd(x).broken});
+function bsum(){var d=db.inc.filter(ended),sc=sum(d,function(x){return x.count}),sh=sum(d,function(x){return x.hatched}),scl=sum(d,function(x){return cd(x).clear}),sr=sum(d,function(x){return cd(x).rot}),sb=sum(d,function(x){return cd(x).broken});
  if(!d.length)return "<div class='box'><small>ব্যাচ শেষ হলে এখানে মোট হিসাব দেখাবে।</small></div>";
  return "<div class='sum'><div class='y'><b>"+bn(d.length)+"</b><span>সম্পন্ন ব্যাচ</span></div><div><b>"+bn(sh)+"</b><span>মোট বাচ্চা ফুটেছে<br>"+bn(sc)+"টি ডিম থেকে</span></div><div><b>"+bn(sh/sc*100)+"%</b><span>গড় হ্যাচ রেট</span></div><div><b>"+bn((sc-scl)/sc*100)+"%</b><span>গড় উর্বরতা<br>বাওয়া "+bn(scl)+" · নষ্ট "+bn(sr)+" · ভাঙা "+bn(sb)+"</span></div></div>"}
 
@@ -833,7 +872,7 @@ function rt(k,d){return rateAt(k,today(),d)}
 function kgg(k){var g=Math.round(k*1000);return bn(Math.floor(g/1000))+" কেজি "+bn(g%1000)+" গ্রাম"}
 function wlatest(t){var l=wlog(t);return l.length?l[l.length-1].avg:null}
 function totalW(){var w=0,n=0;db.flock.forEach(function(g){var a=wlatest("f:"+g.id);if(a!=null&&g.n){w+=a*g.n;n+=g.n}});if(!n)return null;var m=w/n,t=0;db.flock.forEach(function(g){var a=wlatest("f:"+g.id);t+=(a!=null?a:m)*g.n});return t}
-function batchLeft(){var o=db.inc.filter(function(x){return x.hatched!=null}).sort(function(a,b){return a.start<b.start?-1:1}).map(function(x){return{x:x,left:x.hatched,age:diff(today(),addD(x.start,x.days))}}),rem=sum(db.chk,function(k){return k.n});o.forEach(function(q){var t=Math.min(q.left,rem);q.left-=t;rem-=t});return o}
+function batchLeft(){var o=db.inc.filter(function(x){return x.hatched!=null}).sort(function(a,b){return a.start<b.start?-1:1}).map(function(x){return{x:x,left:x.hatched,age:diff(today(),bHatch(x))}}),rem=sum(db.chk,function(k){return k.n});o.forEach(function(q){var t=Math.min(q.left,rem);q.left-=t;rem-=t});return o}
 function chickBuckets(){var b={chick:0,m1:0,m2:0,m3:0};batchLeft().forEach(function(o){b[o.age<30?"chick":o.age<60?"m1":o.age<90?"m2":"m3"]+=o.left});return b}
 function growW(){var w=0;batchLeft().forEach(function(o){var a=wlatest("b:"+o.x.id);if(a!=null)w+=a*o.left});return w}
 function parentVal(){var w=totalW();if(rt("kg")>0&&w!=null)return{v:w*rt("kg"),m:"ওজন "+kgg(w)+" × "+tk(rt("kg"))+"/কেজি"};return{v:parentsVal(),m:"ক্রয়মূল্য ধরে (ওজন ও কেজি রেট দিলে বাজার দরে হবে)"}}
@@ -842,10 +881,10 @@ function ownEggs(){return sum(db.esale.filter(function(x){return !x.n&&x.own}),f
 function addOwn(){var c=+v("oc"),d=v("od"),src=v("ou"),why=v("orr");if(!c||!d)return alert("সংখ্যা ও তারিখ দিন");
  var o=src==="বীজ ডিম"?["eggs",{id:id(),date:d,seed:0,table:0,seedBad:c,note:why}]:["esale",{id:id(),date:d,n:0,price:0,bad:c,note:why,own:1}],st=src==="বীজ ডিম"?seedStock():tableStock();
  if(c>st)ask(src+" মজুদ আছে "+bn(st)+"টি, এর চেয়ে বেশি দিচ্ছেন। তবুও সংরক্ষণ করবেন?",[],function(){put(o[0],o[1])},"সংরক্ষণ করুন");else put(o[0],o[1])}
-function runningBatches(){var all=db.inc.slice().sort(function(a,b){return a.start<b.start?-1:1}),act=all.filter(function(x){return x.hatched==null});
+function runningBatches(){var all=db.inc.slice().sort(function(a,b){return a.start<b.start?-1:1}),act=all.filter(running);
  if(!act.length)return "<div class='box'><div class='empty'>এখন কোনো ব্যাচ চলছে না</div></div>";
  return act.map(function(x){var n=all.indexOf(x)+1,d=diff(today(),x.start),td=nextTodo(x);
-  return "<div class='box'><div class='it' style='border:0;padding:0'><b style='font-size:17px'>ব্যাচ "+bn(n)+" · চলমান</b><span>"+bn(Math.max(0,d))+" / "+bn(x.days)+" দিন</span></div><small style='color:var(--mute)'>"+fmt(x.start)+" · "+bn(x.count)+"টি ডিম বসানো · ভালো ডিম "+bn(live(x))+"টি · "+(x.tr!=null?"হ্যাচিং ট্রেতে":"সেটারে")+"</small><div class='bar'><i style='width:"+Math.min(100,Math.max(0,d)/x.days*100)+"%'></i></div><b class='"+(td.indexOf("এখন")===0?"bad":"ok")+"'>👉 "+td+"</b><br><b>"+envNow(x)+"</b></div>"}).join("")}
+  return "<div class='box'><div class='it' style='border:0;padding:0'><b style='font-size:17px'>ব্যাচ "+bn(n)+" · চলমান</b><span>"+bn(Math.max(0,d))+" / "+bn(x.days)+" দিন</span></div><small style='color:var(--mute)'>"+fmt(x.start)+" · "+bn(x.count)+"টি ডিম বসানো · ভালো ডিম "+bn(live(x))+"টি · "+(x.hatched!=null?"বাচ্চা বের হয়েছে "+bn(x.hatched)+"টি":x.tr!=null?"হ্যাচিং ট্রেতে":"সেটারে")+"</small><div class='bar'><i style='width:"+Math.min(100,Math.max(0,d)/x.days*100)+"%'></i></div><b class='"+(td.indexOf("এখন")===0?"bad":"ok")+"'>👉 "+td+"</b><br><b>"+envNow(x)+"</b></div>"}).join("")}
 function marketBox(){
  var pv=parentVal(),b=chickBuckets(),rc=rt("chick")||avgChick(),eg=rt("egg",20),es=Math.max(0,seedStock())+Math.max(0,tableStock()),RL=rlist(),
  rows=[["🐓 মুরগি-মোরগ (প্যারেন্ট)",bn(birds())+"টি",pv.v,pv.m],["🐥 বাচ্চা (০–২৯ দিন)",bn(b.chick)+"টি",b.chick*rc,rc?"প্রতিটি "+tk(rc):"রেট দিন"],["১ মাসের মুরগি",bn(b.m1)+"টি",b.m1*rt("m1"),rt("m1")?"প্রতিটি "+tk(rt("m1")):"রেট দিন"],["২ মাসের মুরগি",bn(b.m2)+"টি",b.m2*rt("m2"),rt("m2")?"প্রতিটি "+tk(rt("m2")):"রেট দিন"],["৩ মাসের মুরগি",bn(b.m3)+"টি",b.m3*rt("m3"),rt("m3")?"প্রতিটি "+tk(rt("m3")):"রেট দিন"],["🥚 ডিম (বীজ + খাওয়ার)",bn(es)+"টি",es*eg,"প্রতিটি "+tk(eg)]],
@@ -985,7 +1024,7 @@ function sug(){
 
  db.flock.forEach(function(g){var l=wlog("f:"+g.id);if(l.length>1){var a=l[l.length-1],b=l[l.length-2];if(a.avg<b.avg*0.95)S.push({t:"warn",h:"ওজন কমেছে: "+g.type+(ageNow(g)!=null?" "+bn(ageNow(g))+" মাসের":"")+" ("+wkg(b.avg)+" → "+wkg(a.avg)+")",b:"খাবার, পানি, কৃমি বা রোগের কারণ হতে পারে।",todo:["খাবারের পরিমাণ ও মান মিলান","মুরগির পায়খানা ও আচরণ দেখুন, সন্দেহ হলে পশু চিকিৎসকের সাথে কথা বলুন"],vit:["মাল্টিভিটামিন; কৃমিনাশক শেষ কবে দিয়েছেন মিলান"]})}});
  wtargets().filter(function(o){return o.id.indexOf("b:")===0}).forEach(function(o){var l=wlog(o.id);if(l.length>1){var a=l[l.length-1],b=l[l.length-2],dd=diff(a.date,b.date);if(dd>0&&(a.avg-b.avg)/dd*1000<5)S.push({t:"warn",h:"বাচ্চার ওজন কম বাড়ছে: "+o.l,b:"দিনে "+bn(Math.max(0,(a.avg-b.avg)/dd*1000))+" গ্রাম করে বাড়ছে।",todo:["খাবার ও পানি, ব্রুডিংয়ের তাপমাত্রা দেখুন","ভ্যাক্সিন ও ওষুধের তালিকা ঠিকমতো দেওয়া হয়েছে কি না মিলান"],vit:["অ্যামাইনোভিট প্লাস (আপনার নিয়মে ২৫ দিন থেকে, শুধু রাতে)"]})}});
- var hb=db.inc.filter(function(x){return x.hatched!=null&&x.count}).sort(function(a,b){return a.start<b.start?-1:1});
+ var hb=db.inc.filter(function(x){return ended(x)&&x.count}).sort(function(a,b){return a.start<b.start?-1:1});
  if(hb.length){var lb=hb[hb.length-1],hrate=lb.hatched/lb.count*100,fert=(lb.count-cd(lb).clear)/lb.count*100;
   if(hrate<70)S.push({t:"warn",h:"শেষ ব্যাচের হ্যাচ রেট কম: "+bn(hrate)+"%",b:"উর্বরতা "+bn(fert)+"%।",why:["বীজ ডিম ৭ দিনের বেশি পুরোনো ছিল","তাপমাত্রা বা আর্দ্রতা ঠিক ছিল না, বিদ্যুৎ গেছে","ডিম ঘোরানো ঠিকমতো হয়নি","মোরগের সংখ্যা বা স্বাস্থ্য, ডিম ফাটা"],todo:["বীজ ডিম ৭ দিনের মধ্যে বসান","সেটিং "+bn(TEMP)+"° ও আর্দ্রতা ৬০% (শেষ ৪ দিন ৭০%) ঠিক আছে কি না দেখুন"]});
   else S.push({t:"ok",h:"শেষ ব্যাচের হ্যাচ রেট ভালো: "+bn(hrate)+"%"})}
@@ -1010,7 +1049,7 @@ function farmSummary(){var t=today(),L=["আজ: "+t+" (বাংলাদেশ
  L.push("দিনের ডিম সংগ্রহ (সর্বশেষ ১০ দিন): "+(ed.join(", ")||"নেই"));
  L.push("অটো খাবার "+autoKg()+" কেজি/দিন; মজুদ "+feedLeft().toFixed(1)+" কেজি; খাবারের দাম "+Math.round(feedAvgPrice())+" ৳/কেজি");
  L.push("ডিমের রেট "+rt("egg",20)+" ৳, মুরগির কেজি রেট "+rt("kg")+" ৳");
- db.inc.forEach(function(x){L.push("- ব্যাচ শুরু "+x.start+": "+x.count+"টি ডিম"+(x.hatched!=null?", ফুটেছে "+x.hatched:", চলছে")+(x.cands&&x.cands.length?", বাওয়া "+cd(x).clear+", নষ্ট "+cd(x).rot+", ভাঙা "+cd(x).broken:""))});
+ db.inc.forEach(function(x){L.push("- ব্যাচ শুরু "+x.start+": "+x.count+"টি ডিম"+(x.hatched!=null?", ফুটেছে "+x.hatched+(hOpen(x)?" (এখনো চলছে)":""):", চলছে")+(x.cands&&x.cands.length?", বাওয়া "+cd(x).clear+", নষ্ট "+cd(x).rot+", ভাঙা "+cd(x).broken:""))});
  L.push("বাচ্চা মজুদ "+chickStock()+"টি, মৃত বাচ্চা "+sum(db.chk.filter(function(x){return x.kind==="die"}),function(x){return x.n})+"টি");
  return L.join("\n")}
 function tips(){
@@ -1047,7 +1086,7 @@ function meat(){var t=today(),h="";
  return "<h1>🍗 মাংসের মুরগি</h1><div class='sum'><div class='y'><b>"+bn(chickStock())+"</b><span>মোট বাচ্চা মজুদ<br>(বাচ্চা থেকে ২–৬ মাস)</span></div><div><b>"+tk(chickStock()*(rt("m1")||120))+"</b><span>আনুমানিক মূল্য (১ মাস রেট ধরে)</span></div></div>"+
  "<h2>ব্যাচ অনুযায়ী</h2><div class='box'>"+(h||"<div class='empty'>এখনো কোনো ব্যাচ ফোটেনি</div>")+"</div>";
 }
-function bHatch(x){return addD(x.start,x.days||21)}
+function bHatch(x){return x.hlog&&x.hlog.length&&x.hdate?x.hdate:addD(x.start,x.days||21)}
 function assetsTab(){var p=assetParts(),h="";Object.keys(p).forEach(function(k){h+="<div class='it'><div>"+k+"</div><b>"+tk(p[k])+"</b></div>"});
  var l=db.led.filter(function(x){return x.type==="asset"}),lh="";
  l.forEach(function(x){lh+="<div class='it'><div>"+esc(x.cat)+"<small>"+fmt(x.date)+"</small></div><div class='act'><b>"+tk(x.amt)+"</b><button class='s' onclick='del(\"led\","+x.id+")'>মুছুন</button></div></div>"});
